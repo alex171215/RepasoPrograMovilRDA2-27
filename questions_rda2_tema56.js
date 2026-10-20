@@ -1,273 +1,504 @@
 // ============================================================
-// BANCO DE PREGUNTAS — RDA2 TEMA 5-6
-// UI Declarativa: Jetpack Compose y SwiftUI
+// BANCO DE PREGUNTAS — RDA2 questionsRDA2Tema56
+// Formato y Distribución Equilibrada: Prof. Juan Francisco Chafla
 // ============================================================
+
 const questionsRDA2Tema56 = [
   {
-    question: "¿Cuál es la premisa filosófica fundamental que diferencia el paradigma declarativo (Compose) del imperativo (XML+Java)?",
-    options: ["El declarativo describe paso a paso cómo construir cada elemento visual; el imperativo solo dice qué resultado se quiere.", "El imperativo describe la secuencia exacta de pasos y es frágil ante cambios del entorno; el declarativo describe el resultado final y deja al framework gestionar la ejecución.", "El declarativo utiliza archivos XML para separar la UI de la lógica; el imperativo integra ambas en el mismo archivo.", "El imperativo es el estándar de la industria en API 36; el declarativo es una alternativa experimental solo para proyectos pequeños."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La metáfora del ingeniero: el imperativo dice 'Camina 5 pasos, gira a la derecha, siéntate' (frágil si el entorno cambia). El declarativo dice 'Quiero estar sentado' y deja a Compose gestionar cómo lograrlo. En UI: el imperativo llama a setText(), el declarativo describe que este texto es el estado actual."
+    "question": "En la introducción al desarrollo declarativo, ¿en qué consiste 'La Metáfora de la Silla' utilizada por el profesor para contrastar el paradigma imperativo con Jetpack Compose?",
+    "options": [
+      "El imperativo se asemeja a un carpintero ensamblando paso a paso las patas, tornillos y lijando la madera (cómo construir); mientras que el declarativo simplemente manifiesta el resultado final: 'Quiero estar sentado', dejando que el framework gestione la ejecución del estado.",
+      "El imperativo describe los materiales de la silla; el declarativo calcula su precio de venta en la tienda.",
+      "El imperativo utiliza sillas de plástico para simular emuladores; el declarativo utiliza sillas ergonómicas para programadores senior.",
+      "El imperativo delega la construcción en corrutinas en segundo plano; el declarativo bloquea el hilo principal hasta terminar la silla."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. 'La Metáfora de la Silla' explica la diferencia radical de filosofías: el imperativo especifica minuciosamente la secuencia de pasos ('corta la madera, pon 4 tornillos, barniza'); el declarativo declara la intención final deseada ('Quiero estar sentado') y el framework se encarga de materializarla."
   },
   {
-    question: "¿Qué problema crítico de sincronización genera el paradigma imperativo XML cuando el estado de la aplicación cambia en múltiples puntos?",
-    options: ["El compilador K2 no puede verificar la exhaustividad de las actualizaciones manuales de la UI en tiempo de compilación.", "El Efecto Cascada: cada punto que modifica el estado debe actualizar manualmente la UI; si uno omite setText() o setVisibility(), la interfaz queda desactualizada, generando bugs difíciles de rastrear.", "ART no puede optimizar las llamadas consecutivas a findViewById() en listas largas, degradando el rendimiento.", "El Garbage Collector elimina las referencias a las vistas XML antes de que el setter manual complete la actualización."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. El Efecto Cascada: múltiples controladores → Actualizaciones Manuales → Inconsistencia Visual. En apps grandes, la fuente de verdad se dispersa y cuando un punto olvida actualizar la UI, la interfaz queda desfasada respecto a la lógica. Compose resuelve esto con una única fuente de verdad."
+    "question": "En el paradigma tradicional de Android (XML + Java/Kotlin), ¿cuál es el problema arquitectónico de la 'Separación de Archivos y Sincronización Manual'?",
+    "options": [
+      "Que los archivos XML ocupan el doble de memoria RAM que los archivos de código fuente compilado.",
+      "La UI se define en un archivo XML y la lógica en Java/Kotlin; el programador está forzado a buscar referencias con findViewById, mantener variables de estado duplicadas y llamar manualmente a setters (como setText() o setVisibility()), siendo altamente propenso a desincronizaciones.",
+      "Que Android Studio no permite abrir archivos XML y Java en la misma ventana de trabajo.",
+      "Que el compilador K2 prohíbe la interoperabilidad entre lenguajes declarativos y hojas de estilo XML."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es b. El modelo tradicional separa rígidamente la vista (XML) de la lógica (Java), forzando al programador a mantener dos estados sincronizados a mano con findViewById() y setters continuos, lo que provoca código frágil y duplicación."
   },
   {
-    question: "¿Cuál es la función de mutableStateOf() en Jetpack Compose y cuál es su rol en el ciclo de recomposición?",
-    options: ["Crea una variable inmutable (val) que el compilador K2 optimiza para reducir el overhead de la Recomposición Inteligente.", "Crea un estado observable: cuando su valor cambia, Compose detecta el cambio y marca para recomposición todos los nodos del árbol que leen ese estado.", "Serializa el estado al Bundle del sistema para sobrevivir al Process Death, eliminando la necesidad de SavedStateHandle.", "Define el tipo de retorno de una función @Composable, indicando que la función es un componente visual dinámico."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. mutableStateOf() crea un estado observable. Cuando su valor cambia, Compose activa el Observador de Cambios que marca para recomposición todos los Composables que leyeron ese valor. Esto es la base del modelo reactivo: cambio de estado → recomposición automática → UI siempre sincronizada."
+    "question": "En el desarrollo imperativo con XML, ¿qué afirmación del profesor resume el riesgo de desincronización manual cuando el programador olvida actualizar una vista?",
+    "options": [
+      "'Si olvidamos llamar a findViewById, el procesador se reinicia automáticamente'.",
+      "'El compilador convierte automáticamente los archivos XML en funciones de Compose'.",
+      "'Si olvidamos llamar a setText(), el dato cambia en la lógica pero la UI no se entera, mostrando información falsa o desactualizada al usuario'.",
+      "'El sistema operativo cierra la aplicación con un error de OutOfMemoryError'."
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es b. En el paradigma imperativo: 'Si olvidamos llamar a setText(), el dato cambia pero la UI no'. Al no existir un enlace reactivo automático, el estado interno se divorcia de la representación visual."
   },
   {
-    question: "¿Por qué la anotación @Composable es el contrato fundamental de Jetpack Compose?",
-    options: ["Porque le indica al compilador que la función puede recibir lambdas como parámetros, habilitando el sistema de Funciones de Orden Superior.", "Porque le indica al runtime de Compose que la función genera elementos visuales dinámicos que deben ser incluidos en el Árbol de Composición y gestionados por el sistema de Recomposición.", "Porque le indica al compilador K2 que aplique optimizaciones AOT específicas para reducir el tiempo de renderizado.", "Porque le indica al sistema de navegación que la función es un destino válido en el NavGraph de la aplicación."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. @Composable es el contrato: le dice a Compose que esta función participa en el árbol de composición, puede tener estado, puede ser recompuesta, y genera elementos visuales. Sin esta anotación, la función es Kotlin puro sin capacidad de participar en el sistema reactivo de Compose."
+    "question": "¿En qué consiste el 'Efecto Cascada' descrito en el Tema 5 como causa principal de inconsistencias visuales y bugs en aplicaciones grandes?",
+    "options": [
+      "La descarga secuencial de imágenes desde servidores CDN remotos.",
+      "La propagación de excepciones no controladas desde el kernel Linux hacia la capa de presentación.",
+      "La animación fluida de transiciones entre fragments de Android.",
+      "Múltiples controladores ➔ Actualizaciones Manuales dispersas ➔ Inconsistencia Visual por dispersión de la fuente de verdad."
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. El Efecto Cascada se formula así: Múltiples controladores que intentan manipular la UI ➔ necesidad de actualizaciones manuales en decenas de callbacks ➔ inconsistencia visual inevitable debido a la pérdida de una fuente única de verdad."
   },
   {
-    question: "¿Cuál es la afirmación que resume el concepto de UI como función del estado en Jetpack Compose?",
-    options: ["La UI se construye una vez en onCreate() y el framework se encarga de mantenerla sincronizada con los cambios de configuración automáticamente.", "La UI siempre reflejará el valor actual del estado: cuando el estado cambia, Compose recompone automáticamente los nodos dependientes, eliminando la necesidad de setters manuales.", "La UI se define en archivos XML que Compose convierte dinámicamente a Composables durante la ejecución para garantizar retrocompatibilidad.", "La UI es una función del ciclo de vida: cada callback (onCreate, onResume) define qué elementos visuales son visibles en ese estado."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. Esta es la frase clave del ingeniero: 'La UI siempre reflejará el valor actual del estado'. El mecanismo: mutableStateOf() → observable → cuando cambia → Recomposición de nodos dependientes → UI sincronizada. Sin setters manuales, sin desincronización posible."
+    "question": "¿Cuál es la premisa fundamental que define a Jetpack Compose al establecer que 'La UI es una Función del Estado'?",
+    "options": [
+      "La interfaz visual no tiene vida propia ni estado interno desconectado; se describe declarativamente como una función pura que toma el estado actual como entrada y proyecta la UI correspondiente, recalculándose automáticamente ante cualquier cambio del estado.",
+      "La interfaz gráfica se dibuja una sola vez al encender el teléfono y nunca más vuelve a cambiar.",
+      "La interfaz visual requiere que el desarrollador invoque explícitamente invalidate() en cada ciclo del reloj.",
+      "La UI se programa mediante scripts de shell que se comunican con el WindowManager de Android."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. En Compose la UI es una función matemática directa del estado: UI = f(Estado). Cuando el estado cambia, Compose reejecuta la función transformadora y redibuja la interfaz sin manipulación manual."
   },
   {
-    question: "¿Qué información almacena cada nodo del Árbol de Composición que permite a Compose ejecutar la Recomposición Inteligente?",
-    options: ["Las rutas de navegación y los argumentos tipados del NavGraph para validar la exhaustividad del grafo.", "Los parámetros recibidos y el estado que observa; con esta metadata, Compose puede identificar exactamente qué nodos deben recomponerse cuando un valor cambia.", "El hash del bytecode .dex de la función para verificar que no ha sido modificada desde la última compilación AOT.", "Las dimensiones y coordenadas de la vista en pantalla para aplicar la optimización de clipping de Material Design 3."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. Cada nodo del árbol almacena: (1) parámetros recibidos de su padre, y (2) estado que observa. Cuando un mutableStateOf() cambia, Compose busca en el árbol todos los nodos que tienen ese estado en sus observaciones y los recompone, ignorando los demás. Esta es la Recomposición Inteligente."
+    "question": "¿Qué rol cumple la anotación @Composable en el ecosistema de Jetpack Compose?",
+    "options": [
+      "Es una directiva para que el recolector de basura no libere la memoria de la pantalla.",
+      "Informa al compilador especializado de Compose que la función está destinada a emitir elementos visuales dinámicos en el árbol de composición, permitiéndole inyectar metadatos para rastrear estados y habilitar la recomposición inteligente.",
+      "Es un decorador cosmético opcional que solo sirve para generar documentación KDoc.",
+      "Convierte la función en un hilo de corrutina secundario para procesamiento en background."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es b. La anotación @Composable transforma el tipo de la función. Le indica al compilador de Compose que acepte la inyección del contexto de composición y gestione el ciclo de vida reactivo del nodo visual."
   },
   {
-    question: "¿Cuál es la analogía con Excel que usa el Tema 5 para explicar la Recomposición Inteligente?",
-    options: ["Así como Excel recalcula todas las celdas cuando abres un archivo, Compose recalcula todo el árbol de composición cuando se inicia la app.", "Así como Excel solo recalcula las fórmulas que dependen de una celda modificada, Compose solo recompone los nodos del árbol que dependen del estado que cambió.", "Así como Excel guarda automáticamente el trabajo en la nube, Compose persiste automáticamente el estado al Bundle del sistema.", "Así como Excel permite múltiples hojas en un libro, Compose permite múltiples NavHosts en el mismo árbol de composición."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La analogía exacta del ingeniero: 'Si cambias el valor de una celda, solo se recalculan las fórmulas que dependen de ella'. En Compose: si cambia un mutableStateOf(), solo se recomponen los Composables que leen ese valor, no toda la pantalla. Esto es la optimización de rendimiento central."
+    "question": "En el esquema de tres elementos sobre 'Cómo Compose mantiene el estado', ¿cuál es la tríada conceptual presentada en la slide 8 del Tema 5?",
+    "options": [
+      "INICIO (onCreate) ➔ PAUSA (onPause) ➔ FIN (onDestroy)",
+      "VISTA (XML) ➔ CONTROLADOR (Java) ➔ MODELO (SQLite)",
+      "RECUERDO (remember) ➔ OBSERVADOR (mutableStateOf) ➔ RESULTADO (Interfaz UI)",
+      "ORIGEN (API) ➔ FILTRO (Lambda) ➔ DESTINO (Room)"
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es a. La tríada fundamental es: 1. RECUERDO (remember: conserva el valor entre recomposiciones), 2. OBSERVADOR (mutableStateOf: notifica cambios al runtime) y 3. RESULTADO (Interfaz UI: se deriva automáticamente del estado sin setters manuales)."
   },
   {
-    question: "En el ejemplo WeatherDashboard del Tema 5, ¿por qué Text(\"Ciudad: Quito\") no se recompone cuando cambia el parámetro temp?",
-    options: ["Porque Text(\"Ciudad: Quito\") es un Composable de solo texto y el sistema de Recomposición Inteligente excluye automáticamente los Composables de texto estático.", "Porque el valor de la cadena 'Ciudad: Quito' no depende del parámetro temp: es un nodo estático en el árbol cuyo contenido no cambia cuando temp cambia.", "Porque el compilador K2 detecta en tiempo de compilación que el String literal no contiene referencias al parámetro y lo marca como invariante.", "Porque está dentro de un bloque remember que conserva su valor entre recomposiciones independientemente del estado externo."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La Recomposición Inteligente evalúa dependencias: Text(\"Ciudad: Quito\") no lee el parámetro temp, por lo tanto no está en la lista de dependencias de temp. Cuando temp cambia, Compose solo recompone Text(\"Temperatura actual: $temp\") que sí depende de temp."
+    "question": "¿Cuál es la función específica de remember en una función Composable?",
+    "options": [
+      "Persistir datos en el disco local para que sobrevivan al reinicio del teléfono.",
+      "Forzar al recolector de basura a liberar la memoria de las vistas no utilizadas.",
+      "Enviar reportes analíticos a Firebase Crashlytics.",
+      "Actuar como la memoria de corto plazo de la función Composable, conservando un valor a través de sucesivas recomposiciones para evitar que se reinicie a su estado por defecto en cada redibujado."
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. remember es el mecanismo de retención en memoria durante la recomposición. Sin remember, cada vez que la función Composable se ejecuta de nuevo crearía la variable desde cero, perdiendo el valor acumulado."
   },
   {
-    question: "¿Cuál es la diferencia entre remember y rememberSaveable en el contexto del manejo de estado en Compose?",
-    options: ["remember es para valores primitivos (Int, String, Boolean) y rememberSaveable es para objetos complejos como Data Classes.", "remember conserva el valor entre recomposiciones pero lo pierde en cambios de configuración (rotación); rememberSaveable serializa el valor al Bundle del sistema para sobrevivir a la rotación y al Process Death.", "remember es la API estable para API 36+ y rememberSaveable es la API legacy mantenida por retrocompatibilidad con versiones anteriores de Compose.", "remember es para estados de UI locales (inputs de texto) y rememberSaveable es para datos de negocio que deben estar en el ViewModel."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. remember vive solo en la instancia actual del árbol de composición: si la Activity es recreada (rotación), el valor se pierde. rememberSaveable persiste al Bundle del sistema: sobrevive a rotación y Process Death. Use rememberSaveable para inputs de texto, scroll position, selección de pestañas."
+    "question": "¿Cuál es la función de mutableStateOf() en Jetpack Compose y por qué se le asocia con el rol de 'OBSERVADOR'?",
+    "options": [
+      "Crea un objeto de estado mutable observable por el runtime de Compose; cuando su valor cambia (.value), notifica de inmediato a todas las funciones Composable que lo leyeron para que se recompongan automáticamente.",
+      "Es un observador que imprime logs en la consola Logcat cada vez que la app entra en segundo plano.",
+      "Observa el estado de la batería del dispositivo y desactiva las animaciones pesadas.",
+      "Convierte una variable inmutable val en un puntero de memoria de lenguaje C."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. mutableStateOf() es el 'OBSERVADOR' de Compose: empaqueta el valor y rastrea quién lo lee; en el instante en que el valor cambia, programa la recomposición de los nodos dependientes."
   },
   {
-    question: "¿Por qué LazyColumn es la solución arquitectónicamente correcta para listas largas en Compose, en lugar de Column con forEach?",
-    options: ["Porque LazyColumn aplica automáticamente el sistema de tipos seguros de navegación a cada elemento de la lista.", "Porque LazyColumn solo compone los elementos visibles en pantalla, cargando y descargando nodos dinámicamente al hacer scroll, mientras Column con forEach mantiene todos los elementos en memoria simultáneamente.", "Porque LazyColumn integra directamente el sistema de temas de Material Design 3 con animaciones de entrada y salida para cada elemento.", "Porque LazyColumn es el único componente de lista compatible con el sistema de Recomposición Inteligente de Compose."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. LazyColumn es el equivalente declarativo del RecyclerView: aplaza la composición de los elementos hasta que son visibles en pantalla, los descarga de memoria cuando salen del viewport. Column con forEach compone todos los elementos inmediatamente, lo que con 1000 elementos degrada significativamente el rendimiento."
+    "question": "¿Qué representa la estructura interna denominada 'Árbol de Composición' en Jetpack Compose?",
+    "options": [
+      "Un árbol binario balanceado de almacenamiento de archivos en el disco flash del dispositivo.",
+      "Una estructura jerárquica de nodos construida por Compose que refleja la relación de anidamiento de las funciones Composable (ej. Screen ➔ Column ➔ TopBar / Text / Icon).",
+      "Un organigrama gráfico que muestra las clases heredadas de la Activity principal.",
+      "El árbol de dependencias de Gradle configurado en el archivo build.gradle.kts."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es b. El Árbol de Composición es la representación jerárquica interna que Compose construye al ejecutar las funciones @Composable, donde cada nodo representa un elemento visual o contenedor y sus relaciones padre-hijo."
   },
   {
-    question: "¿Qué afirmación describe correctamente la relación entre Jetpack Compose y SwiftUI como DSLs modernos?",
-    options: ["Compose y SwiftUI son competidores directos que implementan filosofías opuestas: Compose usa programación imperativa funcional y SwiftUI usa programación declarativa reactiva.", "Ambos frameworks son DSLs que describen pantallas de forma declarativa, comparten estructuras equivalentes (Column/VStack, Row/HStack) y representan la convergencia de la industria móvil hacia el paradigma declarativo.", "Compose está diseñado exclusivamente para Android y SwiftUI para iOS; la única similitud es el lenguaje base (Kotlin y Swift respectivamente).", "SwiftUI es una versión simplificada de Jetpack Compose que Apple adaptó para iOS eliminando el soporte para estado mutable y Recomposición Inteligente."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. El Tema 5 establece la convergencia: ambos son DSLs que comparten Column/VStack, Row/HStack, Modifier/.padding(), remember/@State. El ingeniero afirma: 'Ambos frameworks comparten la filosofía declarativa moderna, unificando el desarrollo móvil'. Entender uno facilita enormemente aprender el otro."
+    "question": "Según la slide 9 del Tema 5, ¿cuáles son los dos elementos de metadata indispensables que almacena cada nodo del Árbol de Composición para hacer posible la Recomposición Inteligente?",
+    "options": [
+      "La dirección IP del cliente y la firma SHA-256 de la APK.",
+      "El número de línea en el archivo de texto y el nombre del autor en Git.",
+      "Los parámetros recibidos por la función y el estado específico que observa.",
+      "La versión de Android Runtime y el porcentaje de batería consumida."
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es b. Cada nodo del árbol retiene: 1. Los parámetros recibidos, y 2. El estado que observa. Con estos metadatos, Compose puede comparar si las entradas cambiaron y decidir si ejecuta o salta (skips) ese nodo."
   },
   {
-    question: "¿Cuál es la función del estado en Jetpack Compose y por qué es llamado 'la única fuente de verdad'?",
-    options: ["El estado es la única forma de persistir datos al Bundle del sistema; sin él, los datos se pierden en cada rotación de pantalla.", "El estado es el único origen desde el cual la UI se genera; no existen setters manuales ni actualizaciones parciales, garantizando que la pantalla siempre refleje fielmente el valor actual del estado.", "El estado es la única forma de compartir datos entre Composables en diferentes pantallas del NavGraph.", "El estado es la representación serializable del ViewModel que Room Database puede persistir directamente en disco."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. En Compose, el estado es la única fuente de verdad: la UI es una función pura del estado. No hay setters manuales dispersos por el código. Cuando el estado cambia, la UI se recalcula automáticamente. Esto garantiza consistencia total: es imposible que la UI y el estado estén desincronizados."
+    "question": "En el Tema 5, ¿cuál es 'La Analogía de Excel' utilizada para explicar el comportamiento de la Recomposición Inteligente en Compose?",
+    "options": [
+      "'Compose formatea los datos en celdas y columnas como una hoja de cálculo imprimible'.",
+      "'Las funciones Composable se limitan a operaciones aritméticas de suma y multiplicación'.",
+      "'Compose guarda los datos en formato CSV para que puedan abrirse en cualquier suite ofimática'.",
+      "'Si cambias el valor de una celda, Excel no recalcula todo el libro; solo se recalculan las fórmulas que dependen directamente de esa celda específica'."
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. 'La Analogía de Excel' es clara: cambiar un estado no destruye la pantalla entera, igual que modificar una celda en Excel solo recalcula las fórmulas que leen dicha celda, dejando intacto el resto."
   },
   {
-    question: "¿Qué significa que el código de Jetpack Compose 'se convierte en la documentación visual de la interfaz'?",
-    options: ["Que el compilador K2 genera automáticamente screenshots de cada Composable y los incluye en el KDoc del proyecto.", "Que el código declarativo de Compose describe directamente qué se verá en pantalla, de forma que leer el código es equivalente a entender la estructura visual de la UI sin necesidad de ejecutar la app.", "Que Compose genera automáticamente archivos XML compatibles con las herramientas de diseño de Material Design 3.", "Que Android Studio puede renderizar el código de Compose como un diagrama de flujo que representa la arquitectura visual de la app."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. Esta es una de las ventajas pedagógicas del paradigma declarativo: `Column { Text('Hola') Button('Enviar') }` describe exactamente la estructura visual. Un desarrollador puede leer el código y entender la pantalla sin ejecutarla. El código imperativo (setContentView, findViewById, setText) no tiene esta propiedad."
+    "question": "En el ejemplo WeatherDashboard(temp: Int) del Tema 5, ¿por qué la línea Text(\"Ciudad: Quito\") se cataloga como 'ESTÁTICO' mientras que Text(\"Temperatura actual: $temp\") es 'DINÁMICO'?",
+    "options": [
+      "Porque Text(\"Ciudad: Quito\") no recibe ni lee el parámetro 'temp', por lo que Compose la omite (skip) durante recomposiciones; mientras que la segunda sí depende de 'temp' y se redibuja ante cada cambio de temperatura.",
+      "Porque 'Ciudad: Quito' está escrita en español y la temperatura utiliza caracteres alfanuméricos.",
+      "Porque 'Ciudad: Quito' está protegida por una clave de cifrado simétrico.",
+      "Porque las ciudades no pueden cambiar de nombre en la base de datos Room."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. La Recomposición Inteligente discrimina nodos estáticos y dinámicos: el nodo de la ciudad no depende del parámetro 'temp' (omite su ejecución), mientras que el de la temperatura lee el parámetro mutado y se recompone."
   },
   {
-    question: "¿Cuál es el riesgo de declarar múltiples NavHost sin una estrategia clara en una app Jetpack Compose?",
-    options: ["Que el compilador K2 no pueda verificar la exhaustividad de las rutas en los múltiples grafos de navegación simultáneos.", "Que el comportamiento del botón Atrás sea errático, ya que cada NavHost administra su propio Back Stack independiente y el sistema no sabe cuál debe procesar el evento de retroceso.", "Que el sistema de temas de Material You aplique colores inconsistentes entre los diferentes contenedores de navegación.", "Que Room Database no pueda acceder a los argumentos de navegación al tener múltiples fuentes de estado del NavController."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. Cada NavHost administra su propio Back Stack. Con múltiples NavHosts sin coordinación, al presionar Atrás, el sistema no sabe cuál debe procesar el evento: puede ignorar uno, ejecutar retrocesos dobles, o causar crashes de navegación. La solución es un único NavHost en la raíz de la jerarquía."
+    "question": "En el ejemplo WeatherDashboard, ¿qué mecanismo ilustra el bloque condicional 'if (temp > 30) { AlertIcon() }'?",
+    "options": [
+      "El bloqueo obligatorio del compilador para evitar temperaturas peligrosas en el hardware.",
+      "La generación de UI Dinámica y Condicional, donde nodos enteros se agregan o retiran del árbol de composición en tiempo de ejecución en función del estado.",
+      "Una llamada al sistema operativo para encender el ventilador del procesador.",
+      "Una falla de concurrencia al no utilizar un bloque synchronized."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es a. Las estructuras condicionales (if/when) dentro de Compose generan UI Dinámica: el nodo AlertIcon() se inserta en el árbol cuando temp > 30 y se remueve automáticamente cuando la condición deja de cumplirse."
   },
   {
-    question: "¿Cuál es la ventaja de la Navegación Tipada con contratos @Serializable sobre las rutas basadas en Strings?",
-    options: ["Que las rutas @Serializable son más cortas y memorizables, reduciendo el riesgo de typos en el equipo.", "Que los errores de navegación (argumentos incorrectos, rutas inexistentes) son detectados en tiempo de compilación en lugar de causar crashes en tiempo de ejecución en manos del usuario.", "Que aumenta el rendimiento de las transiciones entre pantallas al eliminar la serialización de cadenas de texto.", "Que reemplaza el NavHost por completo, simplificando la arquitectura de navegación a un único componente."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. Con Strings, un typo ('pérfil' vs 'perfil') compila sin errores y falla en runtime cuando el usuario navega. Con contratos @Serializable, el compilador verifica que la ruta exista y que los argumentos sean del tipo correcto ANTES de que la app llegue al usuario. Es el 'Escudo del Compilador' aplicado a la navegación."
+    "question": "¿Qué es conceptualmente un 'DSL' (Domain-Specific Language) según la evolución lingüística explicada en el Tema 5?",
+    "options": [
+      "Un protocolo de telecomunicaciones para conectar dispositivos por cable telefónico.",
+      "Un nuevo lenguaje binario que reemplaza por completo a Kotlin y Swift en el kernel.",
+      "Un 'lenguaje dentro de un lenguaje', diseñado para una tarea concreta y especializada; donde no se programan algoritmos paso a paso, sino que se describe directamente qué se quiere ver.",
+      "Un compilador de bases de datos relacionales para teléfonos de gama baja."
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es b. Un DSL (Lenguaje Específico de Dominio) es un dialecto o lenguaje embebido diseñado para resolver un problema puntual: en lugar de lógica algorítmica imperativa, describe el resultado visual de forma concisa y declarativa."
   },
   {
-    question: "¿Qué función cumple el NavController en la arquitectura de navegación de Jetpack Compose?",
-    options: ["Es el contenedor visual que intercambia los Composables en pantalla según la ruta activa, equivalente a un FrameLayout en XML.", "Es el cerebro estratégico de la navegación: gestiona el estado del Back Stack, coordina las transiciones entre destinos y facilita el paso de argumentos entre pantallas.", "Es el mapa declarativo de todos los destinos y sus conexiones lógicas, permitiendo la implementación nativa de Deep Linking.", "Es el componente que serializa los argumentos de navegación usando @Serializable para garantizar la seguridad de tipos."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. El NavController es el 'cerebro estratégico': gestiona destinos (coordina el movimiento entre nodos del grafo), administra el Back Stack (mantiene la pila de pantallas para retroceso coherente) y facilita la transferencia de datos entre pantallas de forma segura."
+    "question": "¿Por qué el profesor afirma que con Jetpack Compose y SwiftUI 'el código se convierte en la documentación visual de la interfaz'?",
+    "options": [
+      "Porque Android Studio toma capturas de pantalla automáticas y las sube a GitHub.",
+      "Porque el código se exporta directamente como un archivo de diseño en formato Figma.",
+      "Porque es obligatorio escribir comentarios de tipo KDoc de más de 50 palabras por función.",
+      "Porque al eliminar el ruido ceremonial y describir la estructura jerárquica con claridad declarativa, leer el código equivale a visualizar directamente la disposición y elementos de la pantalla."
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. Al usar un DSL declarativo, la jerarquía de funciones (Column { TopBar(); Text(); Button() }) refleja fielmente la composición espacial de la pantalla, haciendo que el código sea auto-documentado visualmente."
   },
   {
-    question: "¿Por qué el NavController debe declararse en niveles altos de la jerarquía de composición y no dentro de un Composable individual?",
-    options: ["Porque el compilador K2 solo puede resolver las rutas de navegación declaradas en el nivel raíz del árbol.", "Para que pueda ser compartido por múltiples Composables que necesiten navegar, siguiendo el principio de State Hoisting.", "Porque Room Database y el Back Stack comparten el mismo CoroutineScope solo disponible en el nivel de la Activity.", "Porque Material Design 3 requiere que el NavController esté en el mismo nivel que MaterialTheme para las animaciones de transición."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. State Hoisting: el estado debe elevarse al nivel más bajo de la jerarquía que necesita compartirlo. El NavController es estado de navegación que múltiples Composables (botones, menús, ícono de retroceso) necesitan acceder. Declararlo alto en la jerarquía garantiza que todos puedan navegar sin prop-drilling."
+    "question": "En la tabla comparativa de convergencia entre Jetpack Compose y SwiftUI, ¿cuáles son los equivalentes directos de los contenedores Vertical y Horizontal?",
+    "options": [
+      "Compose: Column / Row ⟷ SwiftUI: VStack / HStack",
+      "Compose: LinearLayout / RelativeLayout ⟷ SwiftUI: UIView / UIStackView",
+      "Compose: VerticalGrid / HorizontalGrid ⟷ SwiftUI: List / ScrollView",
+      "Compose: Box / Scaffold ⟷ SwiftUI: ZStack / ContentView"
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es a. La convergencia arquitectónica muestra un paralelismo exacto: el contenedor vertical es Column en Compose y VStack en SwiftUI; el horizontal es Row en Compose y HStack en SwiftUI."
   },
   {
-    question: "¿Cuál es la diferencia entre el NavGraph de Compose y el grafo de navegación en XML del sistema legacy?",
-    options: ["No hay diferencia funcional; el NavGraph de Compose convierte el XML automáticamente a código Kotlin durante la compilación.", "En Compose, el NavGraph es código Kotlin fluido y programático (no XML rígido), lo que facilita Deep Linking nativo, definición tipada de argumentos y reconstrucción dinámica del flujo.", "El NavGraph de XML soporta más tipos de argumentos que el de Compose, siendo preferido para apps con navegación compleja.", "El NavGraph de Compose solo funciona con destinos simples; para grafos complejos con anidamiento es necesario usar XML."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. En el sistema legacy, el grafo de navegación era un archivo XML estático. En Compose, el NavGraph es código Kotlin fluido: las rutas son objetos tipados, los argumentos tienen tipos seguros, el Deep Linking se implementa nativamente, y el grafo puede construirse de forma dinámica o condicional."
+    "question": "En la comparativa de estilo y apariencia entre Compose y SwiftUI, ¿a qué elemento de SwiftUI corresponde el Modifier de Jetpack Compose?",
+    "options": [
+      "A las variables @Binding de los protocolos.",
+      "A los métodos encadenados de vista como .padding(), .background() y .frame(), que actúan como 'adjetivos' que califican y transforman la apariencia del componente.",
+      "A la función body de la estructura View.",
+      "Al protocolo ObservableObject de Combine."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es b. Los modificadores en ambos frameworks operan como 'adjetivos' que califican el componente: en Compose se encadenan mediante Modifier.padding().background(), y en SwiftUI mediante .padding().background()."
   },
   {
-    question: "¿Cuál es la 'crisis de las rutas basadas en texto' que la Navegación Tipada de API 36 viene a resolver?",
-    options: ["Los Strings de rutas tienen un límite máximo de 255 caracteres que puede causar truncamiento en rutas con múltiples parámetros anidados.", "Los Strings de rutas son errores silenciosos: un typo no detectado por el compilador causa crashes en tiempo de ejecución; pasar un tipo incorrecto genera excepciones tardías; el refactorizado es inseguro y costoso.", "Las rutas en String son incompatibles con el sistema de Kotlin Multiplatform, bloqueando el desarrollo de apps que comparten código con iOS.", "Los Strings de rutas consumen excesiva memoria en el Back Stack cuando la app tiene más de 10 destinos de navegación activos."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. Tres problemas críticos de las rutas en String: (1) errores silenciosos (typos que compilan pero fallan en runtime), (2) tipos incorrectos (String donde se espera un Int causa crash tardío), (3) deuda técnica (renombrar una ruta requiere buscar todos los Strings manualmente, arriesgando omisiones)."
+    "question": "En la gestión de estado local, ¿cuál es el análogo directo en SwiftUI para el mecanismo remember de Jetpack Compose?",
+    "options": [
+      "El contenedor NavigationView",
+      "El modificador .onAppear()",
+      "El decorador @State",
+      "El método DispatchQueue.main"
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es a. remember en Compose retiene el estado local en el árbol de composición; en SwiftUI, el property wrapper @State cumple idéntica función reteniendo el valor y disparando el redibujado de la vista ante mutaciones."
   },
   {
-    question: "¿Qué hace el método toRoute<T>() en el sistema de Navegación Tipada de API 36?",
-    options: ["Registra automáticamente un Composable como destino de navegación en el NavGraph, eliminando la necesidad de declararlo explícitamente.", "Deserializa automáticamente los argumentos del NavBackStackEntry al tipo de datos definido en la clase @Serializable, eliminando el boilerplate de extracción manual.", "Genera el NavController correspondiente al destino tipado para evitar instanciar múltiples NavHosts.", "Valida en compilación que todos los campos de la clase @Serializable tienen valores por defecto para evitar NullPointerExceptions."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. toRoute<ProductDetail>() deserializa automáticamente los argumentos del NavBackStackEntry al objeto ProductDetail. En el sistema de Strings, esto requería boilerplate de extracción manual (getInt, getString, argumentsMap). Con Type-Safety, el sistema lo hace de forma segura y automática."
+    "question": "En la actividad práctica de refuerzo del Inspector de Composición, un estudiante reporta que su lista de 1000 elementos sufre una ralentización extrema (lag) durante el scroll. ¿Cuál es la causa técnica de este problema?",
+    "options": [
+      "El teléfono se quedó sin conexión a internet.",
+      "Haber compilado la aplicación utilizando el modo Release de Gradle.",
+      "El uso de Modifier.fillMaxSize() en la raíz de la pantalla.",
+      "El uso erróneo de Column con forEach, lo que obliga al runtime a componer, renderizar y mantener en memoria los 1000 elementos simultáneamente, agotando el presupuesto de fotogramas del Main Thread."
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. Column evalúa todo su contenido de golpe: con 1000 elementos crea 1000 nodos en memoria de forma simultánea, colapsando el rendimiento. Column nunca debe usarse para listas dinámicas o grandes."
   },
   {
-    question: "¿Cuál es la característica que diferencia radicalmente a Jetpack Compose de SwiftUI respecto al manejo de estado local?",
-    options: ["En Compose el estado se maneja con by remember { mutableStateOf() } y la referencia al objeto usa delegación de propiedades de Kotlin; en SwiftUI se usa @State y la sintaxis es directa sin delegación.", "En Compose el estado debe declararse siempre en el ViewModel; en SwiftUI el estado puede vivir directamente en la vista con @State.", "En Compose el estado local es inmutable (val); en SwiftUI el estado local es siempre mutable (var) por diseño del lenguaje Swift.", "En Compose el estado es compartido entre todos los Composables del árbol; en SwiftUI el estado es privado a la vista que lo declara."],
-    correctIndex: 0,
-    feedback: "La respuesta correcta es a. La distinción es sintáctica pero importante: Compose usa delegación de propiedades de Kotlin (`by remember { mutableStateOf(0) }`), que permite usar el valor directamente con `count` en lugar de `count.value`. SwiftUI usa la property wrapper `@State` con una sintaxis más directa. Funcionalmente son equivalentes: ambos crean estado local observable."
+    "question": "Ante el problema de lentitud al renderizar 1000 elementos en una Column, ¿cuál es la solución arquitectónica correcta en Jetpack Compose y cómo funciona?",
+    "options": [
+      "Reemplazar Column por LazyColumn, el equivalente declarativo de RecyclerView, que solo compone y mantiene en memoria los elementos que son visibles actualmente en pantalla (reciclaje virtual).",
+      "Agregar un hilo Thread.sleep(10) dentro del forEach para darle descanso a la CPU.",
+      "Dividir los 1000 elementos en diez Activities separadas.",
+      "Convertir todos los textos de la lista en imágenes vectoriales SVG."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. LazyColumn implementa carga bajo demanda y virtualización (análogo moderno de RecyclerView): solo compone los elementos que caben en la ventana visible, reciclando recursos durante el desplazamiento."
   },
   {
-    question: "¿Cuál es el problema que resuelve el patrón UiState con sealed class al modelar estados de pantalla en Compose?",
-    options: ["Serializa automáticamente el estado de la UI al Bundle del sistema para sobrevivir al Process Death sin usar SavedStateHandle.", "Modela de forma exhaustiva y segura todos los estados posibles de la pantalla (Loading, Success, Error), forzando al desarrollador a manejar cada estado y previniendo estados inconsistentes en la UI.", "Reemplaza al ViewModel como fuente de verdad del estado, permitiendo que los Composables gestionen directamente las llamadas de red.", "Convierte el estado en un tipo serializable compatible con Room Database para persistencia automática en disco."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. El patrón UiState con sealed class es el 'Escudo del Compilador' aplicado a estados de pantalla: Loading, Success y Error definen el universo completo de estados. Con when(uiState), el compilador exige manejar todos los casos: si se agrega un estado nuevo (ej. Timeout), el when existente deja de compilar, obligando al manejo explícito."
+    "question": "En la actividad práctica con Sealed Classes del Tema 5, ¿cuál es el patrón arquitectónico recomendado para modelar el estado de una pantalla reactiva?",
+    "options": [
+      "Variables booleanas independientes como isLoading, isSuccess e isError dentro de la Activity.",
+      "El patrón UiState modelado mediante una sealed class (o sealed interface) con variantes estrictas: Loading, Success y Error, garantizando estados mutuamente excluyentes.",
+      "Un archivo de configuración JSON guardado en la carpeta de recursos assets.",
+      "Una lista de enteros en la que el código 0 es éxito y 1 es error."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es b. Modelar UiState con sealed class (Loading, Success, Error) garantiza que la pantalla solo pueda estar en un estado válido a la vez, eliminando incoherencias (ej. mostrar el spinner de carga y el error al mismo tiempo)."
   },
   {
-    question: "¿Por qué el Tema 5 establece que Jetpack Compose y SwiftUI representan una convergencia de la industria móvil?",
-    options: ["Porque Google y Apple firmaron un acuerdo para unificar sus frameworks de UI en una única especificación compartida.", "Porque ambos frameworks adoptaron independientemente la misma filosofía: UI declarativa, estado como fuente de verdad, Recomposición/Invalidación automática, y estructuras equivalentes (Column/VStack, Row/HStack, Modifier/.padding()), demostrando que el paradigma declarativo es el futuro del desarrollo móvil.", "Porque Kotlin Multiplatform permite usar Jetpack Compose tanto en Android como en iOS, eliminando la necesidad de SwiftUI.", "Porque tanto Compose como SwiftUI compilan a binarios nativos ARM64, compartiendo el mismo runtime de ejecución en dispositivos Apple Silicon."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La convergencia es independiente y orgánica: ambos frameworks llegaron a las mismas soluciones para los mismos problemas. Column/VStack, Row/HStack, Modifier/.padding(), remember/@State. El ingeniero afirma que entender uno de los dos frameworks facilita enormemente aprender el otro, lo que demuestra la solidez del paradigma declarativo."
+    "question": "¿Cómo se complementa el patrón UiState con el bloque when(uiState) en Jetpack Compose según las directrices de robustez del docente?",
+    "options": [
+      "Permite ignorar los errores de red sin notificar al usuario.",
+      "Convierte la interfaz en un servicio que se ejecuta con la pantalla apagada.",
+      "Aprovecha 'El Escudo del Compilador' para exigir exhaustividad total en tiempo de compilación: cada variante (Loading, Success, Error) renderiza su UI correspondiente sin requerir cláusula else, evitando estados no gestionados.",
+      "Genera automáticamente la base de datos Room a partir de las ramas del when."
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es b. Al evaluar un UiState de clase sellada con when, el compilador verifica matemáticamente que todos los estados posibles estén cubiertos en la UI, alertando en compilación si el desarrollador omitió alguna condición."
   },
   {
-    question: "¿Qué ocurre cuando una función @Composable no marcada como @Stable recibe el mismo valor de parámetro que en la recomposición anterior?",
-    options: ["Compose siempre la recompone para garantizar que la UI esté actualizada, independientemente de si los parámetros cambiaron.", "Compose puede saltarse (skip) la recomposición de esa función si sus parámetros son iguales a los de la invocación anterior, optimizando el rendimiento.", "Compose lanza una excepción de compilación advirtiendo que la función debe ser marcada explícitamente como @NonRestartable.", "Compose fuerza una recomposición completa del árbol padre para garantizar la consistencia del estado."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La Recomposición Inteligente incluye la capacidad de 'skip': si los parámetros de un Composable no han cambiado desde la última composición, Compose puede omitir su recomposición completamente. Esto requiere que los parámetros sean tipos 'stable' (inmutables o que notifican cambios), lo que Compose verifica en compilación."
+    "question": "¿Por qué el paradigma declarativo de Compose elimina por diseño la 'desincronización entre el estado lógico y lo que el usuario visualiza'?",
+    "options": [
+      "Porque los teléfonos modernos tienen procesadores de ocho núcleos.",
+      "Porque el código se almacena en el servidor y no en la memoria RAM del teléfono.",
+      "Porque Compose bloquea la pantalla cada vez que el usuario intenta realizar un cambio de configuración.",
+      "Porque al no existir setters manuales (como setText o setVisibility), la UI no tiene un estado paralelo propio: es una proyección directa y reactiva del estado, derivándose automáticamente cada vez que éste muta."
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. En Compose desaparece el intermediario manual: la UI no se 'actualiza con órdenes', sino que 'reacciona al estado'. Si el estado cambia, la UI se recompone reflejando exactamente el nuevo valor."
   },
   {
-    question: "¿Cuál es la 'Regla de Oro' del State Hoisting en Jetpack Compose?",
-    options: ["Todo el estado debe elevarse siempre al ViewModel para garantizar la separación de responsabilidades entre la UI y la lógica de negocio.", "El estado debe elevarse al nivel más bajo de la jerarquía de composición desde el que necesita ser compartido o controlado; ni más arriba ni más abajo de lo necesario.", "El estado debe declararse siempre en la función @Composable más cercana a la raíz del árbol para maximizar la visibilidad y facilitar las pruebas.", "El estado debe duplicarse en cada Composable que lo necesite para evitar el prop-drilling y simplificar la arquitectura."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. State Hoisting: elevar el estado al nivel correcto es el arte de la arquitectura en Compose. Demasiado alto (siempre en el ViewModel) es excesivo para estado de UI puramente local. Demasiado bajo (dentro del Composable que lo usa) impide compartirlo. El nivel correcto es el ancestro común más bajo entre todos los consumidores del estado."
+    "question": "En Jetpack Compose, ¿qué se entiende por 'Recomposición Inteligente' (Smart Recomposition)?",
+    "options": [
+      "La capacidad del runtime de Compose de omitir (skip) la ejecución de funciones Composable cuyos parámetros y estados observados no han cambiado, redibujando estrictamente los nodos que sufrieron modificaciones.",
+      "El proceso mediante el cual Android Studio reescribe automáticamente el código mal optimizado del estudiante.",
+      "La descarga de layouts pre-renderizados desde Google Play Services.",
+      "La recolección de basura forzada que ejecuta ART antes de cada animación."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. Smart Recomposition optimiza el rendimiento evitando el redibujado ciego: si una función Composable recibe los mismos argumentos y su estado observado no cambió, Compose la salta sin consumir ciclos de CPU."
   },
   {
-    question: "¿Cuál es la diferencia entre un Stateful y un Stateless Composable en Jetpack Compose?",
-    options: ["Un Composable Stateful requiere la anotación @Stateful; un Composable Stateless requiere @Stateless para que el compilador aplique las optimizaciones correspondientes.", "Un Composable Stateful mantiene su propio estado internamente con remember; un Stateless Composable recibe todos sus datos como parámetros y es más fácil de probar, reutilizar y previsualizar.", "Un Stateful Composable puede comunicarse directamente con Room Database; un Stateless Composable solo puede leer datos del ViewModel.", "Un Stateful Composable es recomponible; un Stateless Composable es estático y el sistema de Recomposición Inteligente lo excluye permanentemente del árbol."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La distinción es arquitectónica: un Composable Stateful gestiona su propio estado internamente (ej. un contador con su propio remember). Un Stateless Composable es una función pura de sus parámetros: no tiene estado propio y recibe todo desde afuera. Los Stateless son más fáciles de probar (se inyectan los datos), reutilizar y previsualizar."
+    "question": "En el desarrollo de interfaces con Compose, ¿cuál es la diferencia conceptual entre un Composable 'Stateful' y uno 'Stateless'?",
+    "options": [
+      "Stateful utiliza internet; Stateless funciona en modo avión.",
+      "Stateful posee y gestiona su propio estado interno (ej. con remember); Stateless no retiene estado interno, recibe sus datos por parámetros y emite eventos hacia arriba mediante lambdas (State Hoisting).",
+      "Stateful es compatible con Android 16; Stateless solo funciona en Android 5.",
+      "Stateful requiere clases abstractas; Stateless solo admite interfaces Java."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es b. Stateful maneja su propio estado interno; Stateless recibe el valor desde afuera y reporta cambios vía callbacks. Los componentes Stateless son altamente reutilizables, modulares y fáciles de testear."
   },
   {
-    question: "¿Por qué el paradigma declarativo de Compose elimina la 'desincronización entre el estado lógico y lo que el usuario visualiza'?",
-    options: ["Porque Compose usa un sistema de locks (semáforos) que impide que la UI se actualice mientras el estado está siendo modificado.", "Porque en Compose la UI es una función matemática pura del estado: UI = f(Estado). No pueden existir dos valores de estado para la misma UI porque la UI siempre se recalcula desde el estado, no desde operaciones manuales de actualización.", "Porque el compilador K2 verifica en compilación que todas las actualizaciones de estado sean aplicadas a la UI antes de que el frame sea renderizado.", "Porque Compose usa el sistema de ARC (Automatic Reference Counting) de iOS para garantizar que las referencias a la UI siempre apunten al estado más reciente."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La fórmula del ingeniero: UI = f(Estado). En el modelo imperativo, la UI y el estado son entidades separadas que pueden desincronizarse. En Compose, la UI se deriva matemáticamente del estado cada vez que cambia. Es imposible la desincronización porque la UI no tiene existencia independiente del estado."
+    "question": "¿Cuál es la 'Regla de Oro' del State Hoisting (elevación de estado) en Jetpack Compose?",
+    "options": [
+      "Todo el estado debe guardarse obligatoriamente en el archivo strings.xml.",
+      "El estado nunca debe salir de la función que lo creó originalmente.",
+      "El estado debe elevarse al ancestro común más cercano que necesite leerlo o modificarlo, fluyendo hacia abajo como datos y hacia arriba como eventos (UDF).",
+      "Cada botón debe alojar el estado de toda la aplicación en una variable global."
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es a. State Hoisting sigue el patrón UDF (Unidirectional Data Flow): el estado se eleva al ancestro común mínimo; los datos fluyen hacia abajo (state down) y las intenciones de cambio suben mediante eventos (events up)."
   },
   {
-    question: "¿Cuál es el mandato del Tema 5 respecto al dominio de Jetpack Compose en API 36?",
-    options: ["Compose es una herramienta complementaria al sistema XML; ambos deben dominarse para garantizar retrocompatibilidad con Android 5.0.", "Dominar Compose es un requisito mandatorio para desarrollar aplicaciones resilientes y alineadas con los estándares de la industria en API 36.", "Compose solo es recomendado para nuevos proyectos (Greenfield); los proyectos legacy deben mantenerse en XML por razones de estabilidad.", "Compose es el estándar solo para proyectos de apps de consumo; para apps empresariales el sistema XML sigue siendo la opción recomendada por Google."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La afirmación exacta del material: 'En la API 36, dominar Compose es un requisito mandatorio para desarrollar aplicaciones resilientes y alineadas con los estándares de la industria'. No es opcional ni complementario: es el estándar actual y futuro del desarrollo Android, respaldado por Google como el reemplazo definitivo del sistema XML."
+    "question": "Al trabajar con Modifiers en Jetpack Compose, ¿por qué el orden de encadenamiento altera de forma determinante el resultado visual?",
+    "options": [
+      "Porque el compilador de Compose ejecuta los modificadores en orden aleatorio si no se usa la palabra reservada inline.",
+      "Porque los modificadores modifican el código XML subyacente en tiempo de ejecución.",
+      "Porque Skia descarta cualquier modificador declarado después de una propiedad de tamaño.",
+      "Porque los modificadores se aplican de forma secuencial envolviendo al elemento; por ejemplo, aplicar .padding() antes de .background() coloca el color dentro del margen, mientras que aplicar .background() antes de .padding() colorea el área total y aplica el relleno internamente."
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. Los modificadores en Compose funcionan por envoltura sucesiva (decoradores). El orden importa: Modifier.background().padding() dibuja el fondo y luego separa el contenido; el orden inverso deja el padding fuera del fondo."
   },
   {
-    question: "¿Cuál es el equivalente de Modifier en SwiftUI para aplicar estilos visuales como padding y color de fondo?",
-    options: ["Los Wrappers de estilo en SwiftUI no tienen equivalente directo con Modifier; se usan clases CSS especiales del DSL.", "Los modificadores encadenados con punto de SwiftUI (ej. .padding(), .background()), que funcionan como adjetivos visuales equivalentes a los Modifier encadenados de Compose.", "El sistema de temas @Environment de SwiftUI que distribuye los estilos globalmente a todos los componentes de la jerarquía.", "El protocolo ViewModifier de SwiftUI que requiere implementación explícita de la función body para cada estilo."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La tabla comparativa: Estilo en Compose (Modifier) ↔ Estilo en SwiftUI (.padding(), .background()). Ambos usan el mismo patrón de encadenamiento: en Compose `Modifier.padding(16.dp).background(Color.Blue)`, en SwiftUI `.padding(16).background(Color.blue)`. El ingeniero los llama 'adjetivos que definen la apariencia'."
+    "question": "¿Qué riesgo severo ocurre si un programador muta un estado directamente en el cuerpo principal de una función @Composable (por ejemplo: count++)?",
+    "options": [
+      "Se produce un bucle de recomposición infinito (Recomposition Loop): la mutación del estado dentro del cuerpo dispara una recomposición, la cual vuelve a ejecutar la función, provocando una nueva mutación inmediata que congela la aplicación.",
+      "El teléfono libera toda la memoria caché del navegador.",
+      "El compilador K2 genera un error de sintaxis y no compila el archivo.",
+      "La función se convierte automáticamente en una corrutina en segundo plano."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. Las funciones Composable deben ser libres de efectos secundarios (side-effect free). Mutar un estado en el cuerpo de la función provoca que Compose se reejecute eternamente, provocando un congelamiento (freeze) de la app."
   },
   {
-    question: "¿Qué distingue al paradigma imperativo (XML) de generar bugs difíciles de rastrear en aplicaciones de gran escala?",
-    options: ["La ausencia de un sistema de tipos en XML que permita detectar errores de layout en tiempo de compilación.", "La dispersión de la fuente de verdad del estado: cuando múltiples controladores actualizan la misma vista manualmente, cualquier omisión genera inconsistencia visual sin que el sistema la detecte automáticamente.", "La incapacidad del compilador K2 de analizar la estructura XML para verificar que todas las vistas tengan IDs únicos.", "La ausencia de soporte para animaciones complejas en el sistema XML, que obliga a usar código Java imperativo para efectos visuales avanzados."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La dispersión de la fuente de verdad es el problema raíz: en el modelo XML+Java, el estado puede estar en variables de la Activity, en Singletons, en SharedPreferences, y la UI se actualiza desde múltiples puntos. Cuando alguno de esos puntos falla en actualizar la vista, el bug visual es silencioso y difícil de reproducir y rastrear."
+    "question": "En el contexto de la convergencia tecnológica entre Compose y SwiftUI, ¿por qué el Tema 5 sostiene que dominar Compose unifica las habilidades del desarrollador en la industria móvil?",
+    "options": [
+      "Porque el código de Compose se puede copiar y pegar directamente en Xcode sin cambiar ninguna letra.",
+      "Porque ambos frameworks comparten la misma filosofía declarativa, conceptos de estado reactivo, estructuras de contenedores (Column/Row vs VStack/HStack) y composición funcional, permitiendo que la transición conceptual entre plataformas sea prácticamente directa.",
+      "Porque Apple compró los derechos de Jetpack Compose para integrarlo en iOS 19.",
+      "Porque ambos lenguajes fueron creados por la misma fundación de código abierto en 2026."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es b. La convergencia hacia DSLs declarativos unifica la industria: entender la UI como función del estado, UDF, árboles reactivos y modificadores en Compose prepara al desarrollador para comprender SwiftUI de forma inmediata."
   },
   {
-    question: "¿Cuál es la conclusión del Tema 5 sobre cómo la recomposición inteligente mejora la claridad del código además del rendimiento?",
-    options: ["Que la recomposición inteligente permite al desarrollador eliminar todos los comentarios del código al ser el propio código autoexplicativo.", "Que al eliminar los setters manuales y centralizar la lógica de actualización en el estado, el código es más declarativo y la intención del desarrollador es más fácil de entender, reduciendo la carga cognitiva.", "Que la recomposición inteligente genera automáticamente documentación técnica en formato KDoc para cada Composable del proyecto.", "Que al reducir el número de líneas de código, la recomposición inteligente disminuye el tiempo de revisión de código en un 60%."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La conclusión del Tema 5: 'La recomposición inteligente optimiza el rendimiento y mejora la claridad del código'. Al no haber setters manuales dispersos, el flujo de datos es unidireccional y predecible: Estado → UI. Cualquier desarrollador que lee el código puede entender inmediatamente qué estado controla qué parte de la pantalla."
+    "question": "En Compose, ¿cuál es la diferencia fundamental entre utilizar un contenedor Row y un contenedor Column?",
+    "options": [
+      "Row es un componente imperativo de XML; Column es exclusivo de Compose.",
+      "Row solo admite textos; Column solo admite botones e imágenes.",
+      "Row organiza los elementos horizontalmente (uno al lado del otro); Column los organiza verticalmente (uno debajo del otro).",
+      "Row requiere permisos de administrador; Column no los requiere."
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es a. Row organiza elementos visuales de forma secuencial horizontal (eje X), análogo a HStack en SwiftUI; Column los organiza verticalmente (eje Y), análogo a VStack."
   },
   {
-    question: "¿Cuál es la premisa fundamental que justifica que el Tema 5 califique a Compose como un 'cambio estructural' en la forma de construir interfaces móviles?",
-    options: ["Que Compose genera binarios más pequeños que XML, reduciendo el tamaño del APK y mejorando la velocidad de descarga.", "Que Compose no solo cambia la sintaxis de escritura de UI, sino el modelo mental completo: la UI deja de ser un objeto que se manipula imperativamente para convertirse en una función declarativa del estado, eliminando una clase entera de bugs de sincronización.", "Que Compose reemplaza completamente el sistema de recursos (res/) de Android, permitiendo definir colores, estilos y strings directamente en el código.", "Que Compose es compatible con iOS a través de Kotlin Multiplatform, eliminando la necesidad de SwiftUI para el desarrollo de apps iOS."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. Es un cambio estructural, no solo sintáctico: el modelo mental cambia de 'manipular vistas con setters' a 'describir la UI como función del estado'. Este cambio elimina estructuralmente la clase de bugs de desincronización (la UI y el estado que difieren) porque en Compose esa desincronización es arquitectónicamente imposible."
+    "question": "¿Qué función cumple el contenedor Box en Jetpack Compose y a qué elemento corresponde en SwiftUI?",
+    "options": [
+      "Es una herramienta para empaquetar archivos ZIP de recursos.",
+      "Es un contenedor para enviar correos electrónicos; corresponde a MailBox en iOS.",
+      "Es una caja de texto editable; corresponde a TextField en SwiftUI.",
+      "Es un contenedor que apila elementos uno encima del otro en el eje Z (profundidad); corresponde a ZStack en SwiftUI."
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es a. Box permite superponer elementos en el eje Z (uno encima de otro con alineaciones relativas), siendo el análogo directo de ZStack en SwiftUI."
   },
   {
-    question: "Al procesar datos de una API que pueden ser nulos, ¿qué combinación de herramientas de Compose y Kotlin garantiza el Embudo de Saneamiento de Datos antes de llegar a la UI?",
-    options: ["Usar var mutable directamente en el Composable para actualizar la UI en tiempo real sin capas intermedias.", "Pasar los datos crudos a través del ViewModel (filtrando con Data Class + Null Safety), exponerlos como StateFlow, y observarlos en el Composable con collectAsState(), garantizando que solo datos válidos lleguen a la UI.", "Usar @Serializable directamente en el Composable para deserializar la respuesta de la API sin pasar por el ViewModel.", "Almacenar los datos crudos directamente en rememberSaveable para persistirlos entre recomposiciones y evitar llamadas repetidas a la API."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. El Embudo de Saneamiento de Datos del ingeniero: API (datos crudos) → ViewModel (Data Class + Null Safety filtra y valida) → StateFlow (observable) → collectAsState() en Composable (lee estado validado) → UI (solo recibe datos limpios y seguros). Nunca datos crudos directamente a la UI."
+    "question": "¿Cuál es la conclusión del Tema 5 respecto a cómo la Recomposición Inteligente mejora la claridad del código además del rendimiento?",
+    "options": [
+      "Al eliminar los setters manuales y centralizar la lógica de actualización exclusivamente en el estado, el código describe limpiamente la intención del diseño, reduciendo la carga cognitiva y facilitando el mantenimiento.",
+      "Permite eliminar todas las pruebas unitarias del repositorio.",
+      "Genera esquemas de bases de datos automáticos en la nube de Google Cloud.",
+      "Obliga al desarrollador a utilizar una única función para toda la aplicación."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. La Recomposición Inteligente no solo ahorra CPU: al liberar al programador de gestionar setters manuales, el código pasa a ser un reflejo claro y conciso de la lógica de negocio, reduciendo bugs y deuda técnica."
   },
   {
-    question: "¿Cuál es la razón por la que Compose redibuja solo los nodos 'dinámicos' y omite los 'estáticos' del árbol de composición?",
-    options: ["Porque los nodos estáticos están marcados con la anotación @Immutable y el runtime de Compose los excluye permanentemente del sistema de seguimiento de cambios.", "Porque en el Árbol de Composición, Compose registra las dependencias de cada nodo: un nodo que no lee ningún estado mutable es estático y sus parámetros no cambian, por lo que no necesita ser recompuesto cuando un estado ajeno cambia.", "Porque el compilador K2 identifica y precompila los nodos estáticos como constantes AOT, eliminándolos del ciclo de Recomposición.", "Porque los nodos estáticos están almacenados en el cache del GPU y Material Design 3 los preserva entre frames para optimizar el rendimiento gráfico."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La Recomposición Inteligente se basa en el seguimiento de dependencias: Compose registra qué estados lee cada nodo durante su composición. Si un nodo no lee ningún mutableStateOf(), no tiene dependencias de estado y es 'estático': Compose sabe que no necesita recomponerlo cuando cualquier estado cambia."
+    "question": "Al procesar una lista de elementos en LazyColumn, ¿por qué es una buena práctica crítica proveer una clave única mediante el parámetro 'key' en items()?",
+    "options": [
+      "Para encriptar los datos del usuario en la memoria RAM.",
+      "Para que el runtime de Compose identifique la identidad estable de cada elemento ante inserciones, eliminaciones o reordenamientos, evitando recomposiciones innecesarias y preservando animaciones y estados de scroll fluidos.",
+      "Porque sin el parámetro key el sistema operativo prohíbe el uso de internet.",
+      "Para que el Garbage Collector elimine los elementos duplicados de la lista."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es b. Proveer una key estable (ej. ID único del producto) permite a LazyColumn rastrear qué elemento se movió o cambió de lugar sin tener que recomponer la lista completa, optimizando drásticamente el scroll."
   },
   {
-    question: "¿Cuál es el 'Fenómeno DSL' que describe el Tema 5 respecto a Jetpack Compose y SwiftUI?",
-    options: ["El hecho de que Compose y SwiftUI sean los únicos frameworks de UI que pueden compilar a WebAssembly, permitiendo ejecutar apps móviles en navegadores.", "El hecho de que Compose y SwiftUI son lenguajes especializados (DSL) construidos sobre Kotlin y Swift respectivamente, que transforman el lenguaje de propósito general en una herramienta específica para describir interfaces declarativas sin escribir algoritmos complejos.", "El hecho de que el código Compose puede ser procesado por herramientas de diseño como Figma para generar prototipos automáticamente.", "El hecho de que tanto Compose como SwiftUI eliminan la necesidad de conocer el lenguaje base (Kotlin y Swift) para construir interfaces de usuario completas."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. El Fenómeno DSL: Compose es 'un lenguaje dentro de Kotlin' diseñado específicamente para describir UIs. SwiftUI es 'un lenguaje dentro de Swift' con el mismo propósito. No se escriben algoritmos: se describe qué se quiere ver. Este fenómeno explica por qué el código de Compose/SwiftUI es tan legible y expresivo comparado con el imperativo."
+    "question": "En el ejemplo de código de la slide 7 del Tema 5: 'var count by remember { mutableStateOf(0) }', ¿qué rol cumple la palabra reservada 'by' de Kotlin?",
+    "options": [
+      "Multiplica el valor de la variable por el factor de densidad de pantalla.",
+      "Convierte la variable en un hilo secundario asíncrono.",
+      "Aplica el patrón Property Delegation (delegación de propiedades), permitiendo leer y escribir en la variable 'count' directamente como un entero (Int) sin tener que acceder manualmente a count.value.",
+      "Obliga a que la variable sea serializada en disco mediante SharedPreferences."
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es b. El operador 'by' utiliza la delegación de propiedades de Kotlin (getValue / setValue) para que tratemos a count como un Int normal, mientras Compose intercepta transparentemente las lecturas y escrituras."
   },
-{
-  "question": "En Jetpack Compose, ¿por qué el orden de encadenamiento de los Modifiers es crítico para el resultado visual final?",
-  "options": [
-    "Porque el compilador de Compose ejecuta los Modifiers en paralelo y genera un error si no siguen un orden alfabético estricto.",
-    "Porque los Modifiers se aplican secuencialmente como un envoltorio (wrapper); por ejemplo, aplicar .padding() antes de .background() crea un margen externo sin color, mientras que invertirlo rellena el padding con dicho fondo.",
-    "Porque el motor de renderizado de Skia descarta cualquier Modifier que se declare después de un .clickable().",
-    "Porque los Modifiers modifican directamente el árbol de nodos de la vista XML subyacente y requieren que los límites del layout se fijen primero."
-  ],
-  "correctIndex": 1,
-  "feedback": "La respuesta correcta es b. En Compose los Modifiers se componen de izquierda a derecha / arriba hacia abajo envolviendo el elemento. Por eso, Modifier.padding(16.dp).background(Color.Red) dibuja el fondo dentro del padding, mientras que Modifier.background(Color.Red).padding(16.dp) dibuja el fondo ocupando todo el espacio y aplica el relleno por dentro."
-},
-{
-  "question": "¿Cuál es la función principal de remember { mutableStateOf(...) } en el ciclo de recomposición de una función Composable?",
-  "options": [
-    "Persistir el valor de la variable en el disco local para que sobreviva a la destrucción del proceso por parte del sistema operativo.",
-    "Preservar el estado en la memoria del runtime de Compose a través de sucesivas recomposiciones, evitando que la variable se reinicialice a su valor por defecto cada vez que la función se reejecuta.",
-    "Sincronizar el valor de la variable directamente con un StateFlow del ViewModel mediante corrutinas en segundo plano.",
-    "Evitar que el hilo principal (Main Thread) ejecute recomposiciones si el dispositivo tiene menos del 20% de batería restante."
-  ],
-  "correctIndex": 1,
-  "feedback": "La respuesta correcta es b. remember retiene el valor en el árbol de Compose durante las recomposiciones. Si solo usáramos mutableStateOf sin remember, cada vez que la función Composable se recomprende crearía una nueva instancia del estado con su valor inicial, perdiendo las modificaciones del usuario."
-},
-{
-  "question": "En la arquitectura de Compose, ¿qué se entiende por 'State Hoisting' (elevación de estado) y cuál es su principal ventaja?",
-  "options": [
-    "Mover la definición de estados a la capa de persistencia Room para que no ocupen memoria en el runtime.",
-    "Un patrón donde un Composable pasa su estado y eventos a su llamador (haciéndose stateless), pasando el valor como parámetro y los cambios como lambdas (eventos hacia arriba), mejorando la reutilización y testeabilidad.",
-    "Elevar los permisos de ejecución del proceso para que la UI tenga prioridad sobre los servicios en segundo plano.",
-    "Subir las clases de datos a un módulo Gradle compartido para que puedan ser utilizadas en entornos multiplataforma KMP."
-  ],
-  "correctIndex": 1,
-  "feedback": "La respuesta correcta es b. El State Hoisting convierte componentes con estado (stateful) en componentes sin estado (stateless): el llamador pasa el estado hacia abajo (value) y el componente emite eventos hacia arriba mediante lambdas (onValueChange), cumpliendo con el patrón UDF (Unidirectional Data Flow)."
-},
-{
-  "question": "¿Por qué un bucle de recomposición infinito (Recomposition Loop) ocurre cuando se muta un estado directamente en el cuerpo principal de un Composable?",
-  "options": [
-    "Porque el Garbage Collector no puede liberar la referencia del Composable mientras el hilo de renderizado esté activo.",
-    "Porque al mutar un estado observado dentro del cuerpo de la función, se notifica inmediatamente al runtime que debe recomponer, provocando una nueva ejecución inmediata que vuelve a mutar el estado indefinidamente.",
-    "Porque el compilador K2 confunde las lambdas con llamadas recursivas cuando superan los 60 fotogramas por segundo.",
-    "Porque el SO Android mata la Activity por considerar que hay un ataque de denegación de servicio en la capa UI."
-  ],
-  "correctIndex": 1,
-  "feedback": "La respuesta correcta es b. Las funciones Composable deben ser libres de efectos secundarios (side-effect free). Si se escribe 'state.value = newValue' en el cuerpo directo de la función, su ejecución cambia el estado, lo cual dispara otra recomposición, creando un bucle infinito que congela la UI."
-},
-{
-  "question": "¿Qué rol cumple el compilador especializado de Compose en comparación con el compilador estándar de Kotlin?",
-  "options": [
-    "Convierte el código Kotlin en XML en tiempo de compilación para que Android Runtime (ART) pueda inflarlo usando LayoutInflater.",
-    "Analiza las funciones anotadas con @Composable, inyecta parámetros sintéticos para rastrear la identidad y dependencias de estado de cada nodo, y genera el código que permite la recomposición inteligente y el saltado (skipping).",
-    "Reemplaza el bytecode de la JVM por llamadas directas a la API Vulkan del procesador gráfico.",
-    "Genera los archivos de Gradle y verifica que las dependencias de Material Design 3 estén actualizadas a su última versión."
-  ],
-  "correctIndex": 1,
-  "feedback": "La respuesta correcta es b. El compilador de Compose no es un compilador independiente sino un plugin del compilador de Kotlin que transforma las funciones @Composable inyectando un parámetro 'Composer' oculto y metadatos para rastrear qué partes cambiaron y omitir las que no cambiaron (smart skipping)."
-}
+  {
+    "question": "¿Qué afirmación describe correctamente la relación entre el Paradigma Imperativo y el Manejo de la Fuente de la Verdad?",
+    "options": [
+      "En el imperativo existe una única fuente de la verdad perfectamente sincronizada por el kernel.",
+      "El imperativo delega la verdad visual en el servidor web remoto.",
+      "El imperativo no utiliza variables de memoria RAM.",
+      "En el imperativo la fuente de la verdad se fragmenta: existe el dato en las variables del controlador y existe el dato reflejado en la propiedad visual del View en pantalla; mantener ambos en sincronía depende de la disciplina del programador."
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. En el modelo imperativo se crea duplicidad: la variable en memoria y el texto dentro del TextView son dos entidades separadas. Si el programador actualiza la variable pero olvida el setText(), la app queda en un estado inconsistente."
+  },
+  {
+    "question": "¿Por qué Jetpack Compose NO utiliza el concepto tradicional de 'herencia de clases de View' (como TextView heredando de View)?",
+    "options": [
+      "Porque Compose adopta el principio de 'Composición sobre Herencia' utilizando funciones simples anotadas con @Composable que se ensamblan y configuran modularmente mediante Modifiers, evitando jerarquías de clases pesadas y rígidas.",
+      "Porque Kotlin no soporta herencia orientada a objetos.",
+      "Porque los dispositivos Android no tienen suficiente memoria para cargar clases Java.",
+      "Porque la máquina virtual ART prohibió el polimorfismo a partir de API 30."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. Compose reemplaza la compleja y pesada jerarquía de herencia de View (donde cada elemento arrastraba miles de líneas de código base) por funciones puras que se componen entre sí, aplicando 'Composition over Inheritance'."
+  },
+  {
+    "question": "En el contexto de la Recomposición Inteligente, ¿qué significa que una función Composable sea 'omitida' (Skipped)?",
+    "options": [
+      "Que el compilador detectó un error y decidió saltarse esa pantalla para no cerrar la app.",
+      "Que Compose determinó que ninguno de los argumentos de entrada ni los estados observados por esa función cambiaron de valor, por lo que reutiliza el resultado del dibujo anterior sin ejecutar el cuerpo de la función.",
+      "Que la función tarda más de un segundo en responder y es cancelada por el sistema.",
+      "Que el usuario apagó la pantalla del teléfono."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es b. 'Skipping' es el núcleo del alto rendimiento en Compose: si los parámetros de un Composable son iguales a los de la recomposición previa, Compose reutiliza la salida gráfica anterior y omite la ejecución del código."
+  },
+  {
+    "question": "En el flujo de datos unidireccional (UDF) de Compose, ¿cómo se propagan las acciones del usuario (como pulsar un botón o escribir en un campo)?",
+    "options": [
+      "Modificando directamente el valor de la base de datos Room mediante punteros.",
+      "Enviando mensajes de broadcast globales a todo el sistema operativo.",
+      "Emitiendo eventos hacia arriba mediante lambdas (callbacks como onValueChange o onClick) hacia el nivel superior donde reside el estado.",
+      "Reiniciando la Activity con un Intent explícito."
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es b. En UDF: los datos descienden por los parámetros (State flows down), y los eventos suben a través de lambdas de retorno (Events flow up), manteniendo un flujo predecible y unidireccional."
+  },
+  {
+    "question": "Si una pantalla de Compose contiene un formulario con 5 campos de texto, ¿por qué es recomendable que el formulario sea Stateless y delegue su estado a un ViewModel?",
+    "options": [
+      "Porque de lo contrario el formulario no puede conectarse a internet.",
+      "Porque la tienda Google Play Store rechaza aplicaciones con funciones Stateful.",
+      "Porque los formularios con estado propio consumen el doble de batería.",
+      "Porque al ser Stateless, el formulario se puede previsualizar fácilmente en el IDE (@Preview), se puede reutilizar en diferentes pantallas y se puede testear con pruebas unitarias sin levantar el framework de Android."
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. Un Composable Stateless es puramente funcional: al no depender de instancias locales de remember, es trivial de probar, se previsualiza instantáneamente con datos falsos en Android Studio y se reutiliza libremente."
+  },
+  {
+    "question": "En la tabla comparativa de convergencia del Tema 5, ¿qué concepto de Compose y SwiftUI ilustra que ambos frameworks operan como 'adjetivos' que califican a los componentes?",
+    "options": [
+      "Los modificadores (Modifier en Compose y los métodos encadenados como .padding() en SwiftUI).",
+      "Las funciones suspendidas de Kotlin.",
+      "Los archivos de configuración de manifiesto.",
+      "Los hilos del recolector de basura."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es a. La slide 14 señala explícitamente: 'Los modificadores funcionan como adjetivos que definen la apariencia de la interfaz'. El componente es el sustantivo (Text), y el modificador es el adjetivo (.padding().background())."
+  },
+  {
+    "question": "¿Cuál es la consecuencia de no utilizar remember al declarar una variable 'var x = mutableStateOf(0)' dentro de una función Composable?",
+    "options": [
+      "El compilador K2 arroja una excepción fatal al compilar el proyecto.",
+      "En cada recomposición de la función, la variable se volverá a crear desde cero con el valor inicial 0, perdiendo cualquier incremento o mutación previa que el usuario haya realizado.",
+      "La pantalla se vuelve monocromática en blanco y negro.",
+      "El teléfono bloquea la entrada táctil del usuario."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es b. mutableStateOf notifica mutaciones, pero no retiene la instancia. Si se omite remember, al recomponer la función se ejecuta de nuevo desde la primera línea, reseteando la variable a 0."
+  },
+  {
+    "question": "¿Por qué Jetpack Compose es calificado en el Tema 5 como un 'cambio estructural' en el desarrollo móvil contemporáneo?",
+    "options": [
+      "Porque obliga a los desarrolladores a cambiar de computadoras y sistemas operativos.",
+      "Porque elimina el uso de Kotlin en favor de código ensamblador.",
+      "Porque sustituye el modelo imperativo de manipulación manual de vistas por un paradigma declarativo, reactivo y componible, eliminando desincronizaciones de UI y unificando la filosofía de desarrollo con SwiftUI.",
+      "Porque hace que las aplicaciones móviles funcionen exclusivamente en servidores en la nube."
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es b. Compose representa un cambio de era: abandona el modelo imperativo heredado de los años 90 (DOM/XML/Views) para adoptar la computación reactiva declarativa moderna, marcando el estándar definitivo en la industria."
+  },
+  {
+    "question": "En la Actividad de Refuerzo sobre Sealed Classes, ¿por qué el uso de UiState con variantes de Loading, Success y Error es superior a tener múltiples variables booleanas (ej. val isLoading = false, val isError = false)?",
+    "options": [
+      "Porque las variables booleanas ocupan más espacio en disco que las clases selladas.",
+      "Porque las clases selladas permiten que la aplicación funcione sin conexión de red.",
+      "Porque los booleanos no son compatibles con el recolector de basura de Android.",
+      "Porque múltiples booleanos pueden combinarse en estados imposibles o contradictorios (ej. isLoading = true Y isError = true simultáneamente); mientras que la sealed class modela estados mutuamente excluyentes donde solo una variante puede existir en un instante dado."
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. Los booleanos independientes dan lugar a estados inválidos (Loading y Error activos a la vez). Sealed class garantiza exclusión mutua: la UI está en Loading, o en Success, o en Error, jamás en una mezcla incoherente."
+  },
+  {
+    "question": "¿Qué rol juega la Recomposición Inteligente en el mantenimiento de una tasa de refresco constante de 60 a 120 fotogramas por segundo (fps) en la pantalla del dispositivo?",
+    "options": [
+      "Al calcular el diff de cambios y redibujar únicamente los píxeles y nodos que realmente mutaron, minimiza el tiempo de procesamiento por cuadro manteniéndolo por debajo de 16 milisegundos, evitando caídas de frames (jank).",
+      "Aumenta la frecuencia de reloj del procesador al máximo nivel posible de forma permanente.",
+      "Reduce la resolución de la pantalla a la mitad mientras el usuario desplaza el dedo.",
+      "Desactiva las notificaciones del sistema para evitar interrupciones visuales."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. Para sostener 60fps cada cuadro debe procesarse en menos de 16ms. Smart Recomposition logra esta meta omitiendo nodos estáticos y redibujando solo lo mínimo indispensable."
+  }
 ];
 
 if (typeof window !== 'undefined') {

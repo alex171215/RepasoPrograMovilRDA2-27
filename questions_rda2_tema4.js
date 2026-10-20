@@ -1,253 +1,503 @@
 // ============================================================
-// BANCO DE PREGUNTAS — RDA2 TEMA 4
-// Ciclo de Vida y Componentes Fundamentales
+// BANCO DE PREGUNTAS — RDA2 questionsRDA2Tema4
+// Formato y Distribución Equilibrada: Prof. Juan Francisco Chafla
 // ============================================================
+
 const questionsRDA2Tema4 = [
   {
-    question: "¿Por qué el sistema operativo Android puede destruir y recrear componentes de una aplicación sin intervención del desarrollador?",
-    options: ["Porque el compilador K2 reordena los hilos de ejecución para equilibrar la carga del CPU.", "Porque el SO gestiona activamente los recursos ante situaciones como falta de memoria RAM o cambios de configuración (ej. rotación de pantalla).", "Porque el Garbage Collector de ART limpia el heap de objetos Activity que llevan más de 5 minutos inactivos.", "Porque el Binder IPC interrumpe el ciclo de vida para sincronizar el Back Stack entre aplicaciones."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. El SO es un gestor de recursos activo: puede matar y recrear componentes cuando necesita memoria o cuando ocurren cambios de configuración (rotación, idioma, tema). Esto tiene impacto directo en la UX, el rendimiento y la persistencia de datos."
+    "question": "¿Por qué la evolución de los sistemas operativos móviles modernos ha transformado la noción de aplicación, pasando de un 'ejecutable lineal' a un ecosistema de 'componentes efímeros y reactivos'?",
+    "options": [
+      "Porque el sistema operativo debe gestionar recursos limitados de forma dinámica, pudiendo destruir y recrear componentes en cualquier instante por presión de memoria RAM o cambios de configuración del entorno (rotación, multiwindow).",
+      "Porque el compilador K2 divide el código binario en micro-hilos independientes que se ejecutan en servidores remotos de Google.",
+      "Porque la máquina virtual ART descarta periódicamente las clases compiladas en Ahead-Of-Time para evitar el recalentamiento de la CPU.",
+      "Porque las directrices de Material Design 3 exigen que las pantallas no permanezcan en memoria más de diez segundos sin interacción."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. Las apps móviles ya no son programas lineales que controlan su propio ciclo de vida de inicio a fin; son ecosistemas reactivos donde el SO puede destruir y recrear componentes en respuesta a condiciones externas como falta de RAM o cambios de configuración (rotación, multi-ventana)."
   },
   {
-    question: "¿Cuál es la responsabilidad principal del callback onCreate() en el ciclo de vida de una Activity?",
-    options: ["Liberar recursos pesados como GPS y conexiones de red para evitar fugas de memoria.", "Reanudar sensores, animaciones y listeners de interacción luego de que la app vuelve al frente.", "Inicializar el ViewModel y configurar la UI (setContentView o setContent en Compose), siendo llamado una única vez en toda la vida del componente.", "Escuchar eventos del sistema operativo para persistir el estado antes de que el proceso sea terminado."],
-    correctIndex: 2,
-    feedback: "La respuesta correcta es c. onCreate() es el punto de entrada del ciclo de vida: aquí se inicializa el ViewModel y se carga el layout de la UI. Es llamado solo una vez por instancia de Activity."
+    "question": "¿Cuál es la responsabilidad principal y mandatoria del callback onCreate() en el ciclo de vida de una Activity?",
+    "options": [
+      "Reanudar animaciones pesadas, sensores de giroscopio y conexiones activas de Bluetooth.",
+      "Inicializar la arquitectura básica del componente, instanciar el ViewModel y configurar la interfaz de usuario mediante setContentView() o setContent {} en Jetpack Compose.",
+      "Ejecutar operaciones de entrada/salida a base de datos Room bloqueando el hilo principal hasta completar la carga.",
+      "Registrar receptores globales de BroadcastReceiver para escuchar eventos del sistema operativo."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es c. onCreate() se invoca una sola vez al nacer el componente y su propósito es la inicialización estructural: instanciar ViewModels y enlazar la vista (setContentView en XML o setContent en Compose)."
   },
   {
-    question: "¿Qué callback del ciclo de vida señala el momento en que el usuario puede interactuar plenamente con la pantalla?",
-    options: ["onStart()", "onResume()", "onCreate()", "onRestart()"],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. onResume() marca el estado de interactividad plena: la Activity está en el frente, visible y recibiendo eventos del usuario."
+    "question": "¿Qué callback del ciclo de vida de una Activity señala el estado de 'interactividad plena' en el que la aplicación tiene el foco del usuario?",
+    "options": [
+      "onStart()",
+      "onRestart()",
+      "onResume()",
+      "onCreate()"
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es b. onResume() sitúa a la Activity en el estado 'Resumed' o interactivo, donde el usuario tiene el foco completo para interactuar con botones, gestos y entradas de texto."
   },
   {
-    question: "¿Por qué las operaciones en onPause() deben ser ligeras y no bloquear la UI?",
-    options: ["Porque onPause() solo se ejecuta cuando la batería está por debajo del 20%.", "Porque durante onPause() el Garbage Collector asume el control total del heap.", "Porque al sistema le urge mostrar la siguiente pantalla con rapidez; si onPause() tarda demasiado, la transición visual se percibe lenta.", "Porque onPause() no puede ser sobreescrito con super.onPause() en API 36+."],
-    correctIndex: 2,
-    feedback: "La respuesta correcta es c. onPause() es la antesala de que otra Activity tome el foco. El sistema quiere que esta transición sea fluida. Tareas pesadas deben moverse a onStop()."
+    "question": "¿Por qué el profesor y las guías de Android advierten rigurosamente que las operaciones en onPause() deben ser ultra ligeras y no bloquear la UI?",
+    "options": [
+      "Porque el Garbage Collector de ART suspende el recolector de basura si un método tarda más de 5 milisegundos.",
+      "Porque Android 16 apaga el chip de memoria RAM de forma inmediata al entrar en pausa.",
+      "Porque el kernel de Linux revoca los permisos de internet de la aplicación si detecta operaciones de entrada/salida en este estado.",
+      "Porque la siguiente Activity no puede iniciar su transición visual hasta que el callback onPause() de la Activity actual haya terminado de ejecutarse."
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. onPause() bloquea la transición de la pantalla entrante. Por eso solo debe contener operaciones mínimas y rápidas; cualquier tarea pesada provocará parpadeos y retrasos perceptibles en la UX."
   },
   {
-    question: "¿Cuál es la diferencia de responsabilidad entre onStop() y onPause()?",
-    options: ["No existe diferencia funcional; ambos son redundantes y se llaman secuencialmente por razones históricas.", "onPause() se usa para operaciones ligeras mientras la pantalla es aún parcialmente visible; onStop() se invoca cuando la Activity ya no es visible y libera recursos pesados.", "onStop() libera el ViewModel de memoria mientras que onPause() desregistra únicamente los BroadcastReceivers.", "onPause() destruye el árbol de composición de Jetpack Compose y onStop() lo destruye a nivel del kernel."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La distinción es de visibilidad: onPause() ocurre cuando la Activity pierde el foco pero puede seguir parcialmente visible. onStop() ocurre cuando está completamente oculta al usuario, siendo el momento de liberar recursos pesados."
+    "question": "En las buenas prácticas de arquitectura, ¿cuál es la diferencia de responsabilidad clave entre onPause() y onStop() al liberar recursos?",
+    "options": [
+      "onPause() realiza operaciones ligeras y guardado rápido de estado; onStop() libera los recursos pesados como GPS, sensores continuos, hilos secundarios o conexiones de red.",
+      "onPause() libera la base de datos Room; onStop() limpia las variables primitivas de Kotlin.",
+      "onPause() destruye el árbol de Compose; onStop() reinicia el proceso del sistema operativo.",
+      "onPause() es exclusivo para modo multi-ventana; onStop() solo se invoca cuando el usuario apaga físicamente el teléfono."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. onPause() debe ser breve (ej. pausar un video o guardar un borrador veloz); onStop() se ejecuta cuando la pantalla ya no es visible para el usuario, siendo el momento oportuno para desregistrar GPS, sensores y liberar conexiones pesadas."
   },
   {
-    question: "Al registrar listeners pesados de sensores en onStart(), ¿en cuál callback es obligatorio desregistrarlos?",
-    options: ["onPause()", "onDestroy()", "onStop()", "onRestart()"],
-    correctIndex: 2,
-    feedback: "La respuesta correcta es c. El patrón correcto es registrar en onStart() y desregistrar simétricamente en onStop(). Si solo se desregistran en onDestroy(), el sensor seguirá activo mientras la Activity está oculta, consumiendo batería y causando fugas."
+    "question": "Al implementar el registro de sensores pesados en onStart() (por ejemplo sensorManager.registerListener(...)), ¿en qué callback es mandatorio desregistrarlos para evitar fugas de memoria y drenado de batería?",
+    "options": [
+      "En onResume()",
+      "En onStop()",
+      "En onPause()",
+      "En onDestroy()"
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es c. La regla de oro del ciclo de vida exige simetría: los recursos que se adquieren en onStart() se liberan en onStop(), mientras que los adquiridos en onResume() se liberan en onPause()."
   },
   {
-    question: "¿Qué herramienta de persistencia de estado sobrevive tanto a la rotación como a la Muerte del Proceso (Process Death)?",
-    options: ["remember de Jetpack Compose, ya que conserva el estado durante toda la sesión.", "ViewModel solo, ya que mantiene el estado en memoria mientras el proceso esté activo.", "ViewModel combinado con SavedStateHandle, ya que el ViewModel sobrevive a la rotación y el SavedStateHandle persiste datos serializables incluso cuando el SO termina el proceso.", "rememberSaveable, ya que serializa automáticamente todos los tipos de datos al Bundle del sistema."],
-    correctIndex: 2,
-    feedback: "La respuesta correcta es c. La rotación destruye y recrea la Activity pero el ViewModel sobrevive en memoria. La Muerte del Proceso termina el proceso completo y el ViewModel desaparece. SavedStateHandle integrado en el ViewModel persiste datos a través de ambos eventos."
+    "question": "Ante una 'Muerte de Proceso' (Process Death) forzada por el sistema operativo debido a escasez de memoria RAM, ¿cuál es el comportamiento del ViewModel tradicional y qué herramienta es obligatoria para recuperar el estado?",
+    "options": [
+      "El ViewModel sobrevive en la memoria swap del kernel y restaura los datos automáticamente mediante reflexión.",
+      "El compilador K2 genera un clon inmutable del ViewModel en el almacenamiento flash de Room sin intervención del programador.",
+      "El ViewModel se destruye junto con todo el proceso; es obligatorio usar SavedStateHandle inyectado en el ViewModel para persistir y restaurar el estado desde el Bundle del sistema.",
+      "El ViewModel pierde únicamente las funciones suspendidas, manteniendo las variables de tipo LiveData intactas."
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es b. El ViewModel sobrevive a cambios de configuración (rotación), pero NO sobrevive a la muerte del proceso (Process Death). Para sobrevivir al Process Death es mandatorio utilizar SavedStateHandle."
   },
   {
-    question: "¿Cuál es la limitación fundamental de remember que obliga a usar rememberSaveable para inputs de UI?",
-    options: ["remember no es compatible con mutableStateOf y debe combinarse con StateFlow.", "remember pierde el estado cuando la configuración del dispositivo cambia (ej. rotación), ya que solo conserva el valor durante la recomposición dentro de la misma instancia.", "remember no puede almacenar tipos primitivos como Int o String.", "remember está obsoleto desde API 36 y reemplazado por retain."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. remember conserva el estado solo durante recomposiciones de la misma instancia. Si el dispositivo rota, la Activity es destruida y recreada, perdiendo el estado. rememberSaveable soluciona esto serializando el estado al Bundle del sistema."
+    "question": "¿Cuál es la limitación fundamental de remember en Jetpack Compose que obliga a utilizar rememberSaveable para formularios y entradas de usuario?",
+    "options": [
+      "remember no admite tipos primitivos como Int o String; solo admite listas mutables.",
+      "remember bloquea la navegación declarativa impidiendo el retroceso con el botón Atrás.",
+      "remember consume el 100% de la cuota del hilo de renderizado Skia si se usa más de tres veces.",
+      "remember retiene el estado únicamente durante las recomposiciones en memoria; ante un cambio de configuración (como rotar la pantalla), la Activity se destruye y el valor de remember se pierde."
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. remember solo vive en el árbol de composición durante recomposiciones. Al rotar la pantalla, la Activity anfitriona se recrea y remember se reinicia; rememberSaveable guarda el dato en el Bundle del sistema permitiendo que sobreviva."
   },
   {
-    question: "En Android 16 (API 36), ¿cuál es el caso de uso recomendado para la nueva API retain?",
-    options: ["Conservar objetos pesados no serializables en memoria durante la rotación, como instancias de ExoPlayer, Bitmaps o grafos complejos, sin necesidad de serialización.", "Persistir tokens de autenticación en el almacenamiento seguro del Keystore del sistema.", "Serializar al Bundle todos los datos del ViewModel para sobrevivir a la Muerte del Proceso sin SavedStateHandle.", "Reemplazar el uso de Room Database para datos temporales."],
-    correctIndex: 0,
-    feedback: "La respuesta correcta es a. retain (novedad de API 36) resuelve el problema de objetos pesados no serializables: ExoPlayer, Bitmaps, grafos complejos. rememberSaveable requiere datos serializables (Bundle); retain mantiene el objeto directamente en memoria durante la rotación."
+    "question": "En Android 16 (API 36), ¿cuál es la innovación introducida por la API retain en la gestión de estado de Jetpack Compose?",
+    "options": [
+      "Permite retener en memoria objetos pesados no serializables (como instancias de ExoPlayer, Bitmaps grandes o grafos complejos) a través de la rotación de pantalla, sin requerir empaquetamiento en un Bundle.",
+      "Permite guardar automáticamente todas las llamadas de red en una base de datos SQLite sin declarar entidades.",
+      "Obliga al recolector de basura a congelar la memoria heap durante un máximo de dos horas.",
+      "Elimina la necesidad de utilizar ViewModels en proyectos multiplataforma KMP."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. La API retain de API 36 está diseñada específicamente para retener en memoria objetos pesados que no son serializables (Bitmaps, reproductores multimedia, grafos) durante cambios de configuración, evitando recargas costosas."
   },
   {
-    question: "¿Cuál es la función de la capa Domain Layer en la arquitectura multicapa recomendada por Google?",
-    options: ["Definir los endpoints de las APIs REST y gestionar el caché de respuestas del servidor.", "Transformar los datos en representaciones visuales interactivas usando Composables.", "Encapsular la lógica de negocio pura en Casos de Uso (Use Cases), siendo el intermediario entre la UI y la Data Layer.", "Gestionar el ciclo de vida de los componentes y coordinar las transacciones de Room."],
-    correctIndex: 2,
-    feedback: "La respuesta correcta es c. La Domain Layer contiene los Casos de Uso que encapsulan tareas de lógica de negocio. Desacopla la UI de la Data Layer: la UI no necesita saber cómo se obtienen los datos, y la Data Layer no necesita saber cómo se presentan."
+    "question": "En la arquitectura de tres capas recomendada por Google (UI / Domain / Data), ¿cuál es la responsabilidad exclusiva de la capa de Dominio (Domain Layer)?",
+    "options": [
+      "Renderizar botones, textos y listas utilizando Jetpack Compose.",
+      "Encapsular la lógica de negocio pura y compleja mediante Casos de Uso (Use Cases), haciéndola reutilizable e independiente de frameworks de UI o bases de datos.",
+      "Consumir directamente endpoints HTTP utilizando Retrofit y deserializar respuestas JSON.",
+      "Controlar la rotación de la pantalla e interactuar con el WindowManager de Android."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es c. La Domain Layer contiene los Casos de Uso (Use Cases). Es lógica de negocio pura de Kotlin, no depende de la UI ni de detalles de persistencia, lo que facilita el testing unitario y la reutilización."
   },
   {
-    question: "Según la arquitectura de capas de Google, ¿cuál es la responsabilidad de la Data Layer?",
-    options: ["Renderizar los Composables y gestionar el árbol de composición.", "Ser el cimiento de la app: obtención, persistencia y sincronización de datos a través de Repositorios, Room y APIs.", "Encapsular la lógica de negocio en funciones puras e inmutables aisladas del framework.", "Gestionar el ciclo de vida de los Activities y coordinar las transacciones del NavController."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La Data Layer es el cimiento: incluye los Repositorios (fuente única de verdad), Room (base de datos local) y la integración con APIs remotas. Expone los datos a las capas superiores sin que estas conozcan la implementación."
+    "question": "En la arquitectura oficial de Google, ¿cuál es la función de la Capa de Datos (Data Layer) y qué componentes la integran?",
+    "options": [
+      "Transformar eventos de pulsación del usuario en animaciones de Material Design 3.",
+      "Supervisar el ciclo de vida de los Fragments y coordinar la pila de navegación hacia atrás.",
+      "Actuar como el cimiento de la aplicación gestionando la obtención, persistencia física y sincronización de datos mediante Repositorios, APIs remotas y bases de datos locales (Room / DataStore).",
+      "Generar el bytecode intermedio de la máquina virtual ART mediante el compilador K2."
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es b. La Data Layer es el cimiento de la app. Expone datos limpios a través de Repositorios, combinando fuentes remotas (APIs) y locales (Room/DataStore) mediante flujos reactivos."
   },
   {
-    question: "¿Cuál es el propósito de la componente Service dentro de los cuatro pilares del sistema Android?",
-    options: ["Proveer una pantalla con la que el usuario puede interactuar directamente.", "Ejecutar operaciones de larga duración en segundo plano sin interfaz de usuario (ej. descargas, reproducción de música).", "Escuchar eventos globales del sistema operativo y notificar a las aplicaciones suscritas.", "Facilitar la compartición segura de datos entre aplicaciones a través de consultas tipadas."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. Un Service ejecuta operaciones de larga duración en segundo plano. En API 36, Google impuso restricciones severas para inicios de Services desde el segundo plano para mejorar la eficiencia energética."
+    "question": "¿Cuáles son los 'Cuatro Pilares' fundamentales del sistema operativo Android detallados en el Tema 4?",
+    "options": [
+      "Scaffold, TopAppBar, NavHost y BottomBar.",
+      "ViewModel, LiveData, Room y Compose.",
+      "Kernel, ART, Binder e Intent.",
+      "Activity, Service, BroadcastReceiver y ContentProvider."
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es a. Los cuatro pilares clásicos sobre los que se sustenta el sistema Android son: Activity (UI), Service (fondo), BroadcastReceiver (eventos globales) y ContentProvider (compartición de datos)."
   },
   {
-    question: "¿Cuál de los cuatro pilares de Android facilita la compartición segura de datos entre aplicaciones?",
-    options: ["Service", "BroadcastReceiver", "Activity", "ContentProvider"],
-    correctIndex: 3,
-    feedback: "La respuesta correcta es d. El ContentProvider expone datos de una app a otras de forma estructurada y segura, proveyendo una interfaz estándar basada en URIs. Es la base de funcionalidades como el selector de contactos o el acceso a la galería."
+    "question": "Dentro de los cuatro pilares de Android, ¿qué componente facilita la compartición segura de datos entre diferentes aplicaciones mediante contratos estructurados?",
+    "options": [
+      "ContentProvider",
+      "BroadcastReceiver",
+      "Service",
+      "Intent Filter"
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es c. ContentProvider encapsula datos y los ofrece a otras aplicaciones de forma segura y controlada (por ejemplo, el proveedor del sistema para la agenda de contactos o fotos)."
   },
   {
-    question: "En la comparativa del ciclo de vida entre Android y iOS, ¿cuál es el análogo directo de onResume() en un UIViewController?",
-    options: ["viewDidLoad()", "viewWillAppear()", "viewDidAppear()", "deinit"],
-    correctIndex: 2,
-    feedback: "La respuesta correcta es c. El mapeo es: onCreate() ↔ viewDidLoad(), onStart() ↔ viewWillAppear(), onResume() ↔ viewDidAppear() (visible e interactiva), onStop() ↔ viewDidDisappear(), onDestroy() ↔ deinit."
+    "question": "En la comparación arquitectónica entre Android e iOS, ¿cuál es el análogo directo en el UIViewController de iOS para el método onCreate() de una Activity de Android?",
+    "options": [
+      "viewWillAppear()",
+      "viewDidLoad()",
+      "viewDidAppear()",
+      "deinit"
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es c. En iOS, viewDidLoad() es el punto donde la vista se ha cargado en memoria por primera vez y se configuran las dependencias iniciales, exactamente como onCreate() en Android."
   },
   {
-    question: "¿Qué innovación de Android 16 (API 36) obliga a migrar de onBackPressed() a OnBackInvokedDispatcher?",
-    options: ["La integración del compilador K2 que depreca las APIs basadas en interfaces funcionales.", "El sistema de Predictive Back que permite animar la transición de regreso antes de que el usuario complete el gesto.", "La restricción de memoria de ART que impide que el Back Stack almacene más de 5 Activities.", "La adopción de Material You que redefine el gesto de retroceso como una animación de color."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. Predictive Back permite al sistema pre-visualizar el destino al que el usuario regresará antes de que complete el gesto. Para soportarlo, el nuevo OnBackInvokedDispatcher reemplaza al viejo onBackPressed()."
+    "question": "En la comparativa de ciclo de vida entre Android (Activity) y iOS (UIViewController), ¿a qué método de iOS corresponde la etapa de visibilidad onStart() de Android?",
+    "options": [
+      "viewDidLoad()",
+      "viewDidAppear()",
+      "viewWillAppear()",
+      "viewWillDisappear()"
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es b. onStart() hace visible la Activity antes de ser interactiva; en iOS, viewWillAppear() se invoca justo antes de que la vista sea visible en pantalla."
   },
   {
-    question: "¿Cuál es la Regla de Oro de persistencia de estado en la arquitectura Android moderna?",
-    options: ["Almacenar siempre el estado de la UI en variables globales estáticas para que sobrevivan a cualquier evento.", "La UI debe derivarse siempre de modelos de datos persistentes; nunca guardar estado directamente en los Composables o Activities.", "Usar exclusivamente Room Database para todo tipo de estado, incluyendo el efímero de la UI.", "Duplicar el estado entre rememberSaveable y SavedStateHandle para garantizar redundancia."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La filosofía arquitectónica fundamental es que la UI es una proyección del estado de los datos. Si la Activity es destruida y recreada, la UI simplemente se reconstruye desde el estado persistente, sin pérdida de información."
+    "question": "En la comparativa de ciclo de vida entre Android e iOS, ¿cuál es el método de UIViewController correspondiente al estado de interactividad plena onResume() de Android?",
+    "options": [
+      "viewWillAppear()",
+      "deinit",
+      "viewDidLoad()",
+      "viewDidAppear()"
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. onResume() en Android corresponde a viewDidAppear() en iOS: la pantalla no solo es visible sino que el usuario puede interactuar plenamente con ella."
   },
   {
-    question: "¿Cuál de las herramientas de persistencia es la indicada para datos críticos que deben sobrevivir entre sesiones completas del usuario?",
-    options: ["ViewModel con SavedStateHandle", "remember en Jetpack Compose", "Room Database o DataStore", "rememberSaveable con Bundle serializable"],
-    correctIndex: 2,
-    feedback: "La respuesta correcta es c. Room Database y DataStore persisten en el sistema de archivos, sobreviviendo a rotaciones, Process Death y reinicios. Son la capa de persistencia física definitiva para datos críticos o volúmenes grandes."
+    "question": "¿Cuál es la diferencia práctica fundamental entre el callback onDestroy() de Android y el método deinit de iOS?",
+    "options": [
+      "onDestroy() es un evento de ciclo de vida emitido por el SO Android cuando la Activity culmina o es recreada; deinit en Swift es el desinicializador de ARC cuando el contador de referencias del objeto llega a cero.",
+      "onDestroy() es llamado automáticamente por el Garbage Collector; deinit lo invoca el usuario desde la UI.",
+      "onDestroy() borra la base de datos de la app; deinit solo borra los archivos temporales de caché.",
+      "No existe ninguna diferencia; son idénticos en implementación y ejecución a nivel de kernel."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. onDestroy() es un callback del framework del SO cuando la interfaz se destruye; deinit es un mecanismo nativo de memoria en Swift ejecutado por ARC (Automatic Reference Counting) cuando un objeto ya no tiene referencias vivas."
   },
   {
-    question: "¿Por qué el Tema 4 afirma que las apps modernas son ecosistemas de componentes efímeros?",
-    options: ["Porque las apps se construyen con microservicios que se despliegan y destruyen dinámicamente en la nube.", "Porque el SO puede destruir y recrear cualquier componente en cualquier momento por razones de memoria o configuración, sin vida garantizada.", "Porque Kotlin Multiplatform permite que los componentes migren entre Android e iOS en tiempo de ejecución.", "Porque Material Design 3 reemplaza los componentes de UI en cada cambio de tema."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. El término efímero describe la naturaleza fundamental de los componentes Android: el SO puede terminarlos por falta de memoria o recrearlos por un cambio de configuración. Un ingeniero profesional diseña sus apps asumiendo que cualquier componente puede morir en cualquier momento."
+    "question": "En Android 16 (API 36), ¿qué innovación elimina el uso tradicional de onBackPressed() en favor de una experiencia fluida basada en gestos?",
+    "options": [
+      "System Intent Sniffer, que redirige todos los eventos táctiles directamente al kernel Linux.",
+      "Predictive Back (retroceso predictivo), obligando a migrar hacia OnBackInvokedDispatcher.",
+      "Gestural ART Bypass, que elimina el Back Stack de la pila de memoria.",
+      "Navigation Flow Controller, que sustituye a las Activities por Services."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es a. Predictive Back permite al usuario previsualizar la pantalla anterior antes de soltar el gesto. API 36 declara obsoleto onBackPressed() y exige OnBackInvokedDispatcher."
   },
   {
-    question: "En la comparativa Android-iOS, ¿cuál es el callback de iOS análogo a onDestroy() de una Activity?",
-    options: ["viewDidDisappear()", "viewWillDisappear()", "dealloc()", "deinit"],
-    correctIndex: 3,
-    feedback: "La respuesta correcta es d. En Swift/iOS, deinit es el destructor: se llama cuando el UIViewController es desasignado de memoria. viewDidDisappear() corresponde a onStop() (la pantalla dejó de ser visible), deinit corresponde a onDestroy() (la instancia es eliminada definitivamente)."
+    "question": "¿Cómo impacta la innovación de 'Eficiencia Energética' de Android 16 en la prioridad de ejecución de las tareas en segundo plano (Jobs)?",
+    "options": [
+      "Desactiva las antenas 5G del dispositivo cada vez que la app entra en onStop().",
+      "Cancela de forma permanente todas las corrutinas que lleven más de 30 segundos activas.",
+      "Asigna cuotas de ejecución dinámicas a los Jobs, otorgando mayor prioridad y cuota de procesamiento mientras la aplicación se encuentra en estado 'Top Resumed' (interactiva en primer plano).",
+      "Bloquea la compilación de aplicaciones que no utilicen algoritmos de compresión de batería."
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es a. En Android 16 las cuotas de ejecución son dinámicas: las apps que están en estado Top Resumed reciben máxima cuota y prioridad, mientras que en segundo plano sufren severas restricciones."
   },
   {
-    question: "¿Cuál es el impacto directo en la UX si el ciclo de vida no se gestiona correctamente?",
-    options: ["El compilador K2 aumenta el tiempo de construcción del APK al detectar referencias no manejadas.", "El Binder IPC emite excepciones no recuperables al intentar comunicar componentes destruidos.", "El usuario puede perder información (formularios, posición de scroll, datos de sesión) al rotar la pantalla o regresar a la app.", "La Data Layer deja de sincronizar los Repositorios con Room cuando el proceso es terminado."],
-    correctIndex: 2,
-    feedback: "La respuesta correcta es c. El impacto es directo: al rotar el dispositivo se pierden datos de un formulario, al regresar de otra app se pierde la posición del scroll. Esto genera la percepción de una app de baja calidad."
+    "question": "En la práctica del laboratorio sobre 'Muerte del Proceso' (Process Death), ¿qué ajuste de las Opciones de Desarrollador del dispositivo se activa para simular la recolección agresiva de memoria del SO?",
+    "options": [
+      "Forzar aceleración por GPU",
+      "Límite de procesos en segundo plano a 10",
+      "Depuración USB por Wi-Fi",
+      "No mantener actividades ('Don't keep activities')"
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. Activar 'Don't keep activities' (No mantener actividades) fuerza al SO a destruir la Activity en cuanto el usuario sale de ella, permitiendo comprobar si SavedStateHandle restaura correctamente el estado."
   },
   {
-    question: "¿Qué representa el BroadcastReceiver y cuál fue la restricción más relevante impuesta en API 36?",
-    options: ["Gestiona el Back Stack; en API 36 fue reemplazado por el NavController.", "Escucha eventos globales del SO (batería, conectividad, alarmas); en API 36 se limitaron las prioridades en anuncios globales para mejorar la estabilidad.", "Ejecuta operaciones en segundo plano; en API 36 sus permisos fueron absorbidos por WorkManager.", "Facilita el intercambio de datos entre apps; en API 36 quedó obsoleto en favor de ContentProvider tipado."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. El BroadcastReceiver es el oído de la app ante el sistema: batería baja, cambio de conectividad, alarmas. En API 36, Google limitó las prioridades de broadcasts globales para prevenir que apps en segundo plano consuman recursos excesivos."
+    "question": "Al implementar SavedStateHandle en un ViewModel, ¿cuál es el snippet idiomático para exponer un valor como StateFlow reactivo y cómo se actualiza?",
+    "options": [
+      "val userId = state.getStateFlow('user_id', 'default'); state['user_id'] = newId",
+      "val userId = state.getLiveData(); state.put('user_id', newId)",
+      "val userId = rememberSaveable { state.getString('user_id') }; state.save(newId)",
+      "val userId = state.asFlow(); state.commit('user_id', newId)"
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. Según el snippet del Tema 4: state.getStateFlow('user_id', 'default') genera un StateFlow reactivo respaldado por el SavedStateHandle, y la actualización se realiza mediante asignación de índice: state['user_id'] = newId."
   },
   {
-    question: "¿Por qué la separación en capas UI/Domain/Data produce apps más mantenibles, escalables y robustas?",
-    options: ["Porque el compilador AOT puede optimizar cada capa independientemente, reduciendo el APK hasta en un 40%.", "Porque cada capa tiene una responsabilidad única y bien definida, permitiendo cambiar una implementación sin afectar las otras capas.", "Porque Material Design 3 requiere mandatoriamente esta estructura para que el Monet Engine aplique los temas.", "Porque ART compila cada capa en un proceso separado, mejorando el paralelismo."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. El principio de Separación de Responsabilidades (SoC): puedes reemplazar Room por Realm en la Data Layer sin tocar la UI. Puedes cambiar la lógica de negocio sin modificar cómo se presentan los datos. Esto reduce deuda técnica y facilita pruebas unitarias."
+    "question": "¿Cuál es la forma recomendada en código para observar el ciclo de vida de una pantalla sin acoplar la lógica dentro de la propia Activity?",
+    "options": [
+      "Sobrescribir el método finalize() de la clase Object de Java.",
+      "Implementar la interfaz DefaultLifecycleObserver (ej. override fun onResume(owner: LifecycleOwner)) y vincularla con lifecycle.addObserver().",
+      "Crear un hilo infinito de Kotlin que consulte periódicamente el estado de la ventana en el WindowManager.",
+      "Usar un bloque try-catch dentro de la función setContent {}."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es b. La arquitectura moderna utiliza DefaultLifecycleObserver (mostrada en la slide 16) para que clases externas puedan reaccionar a eventos del ciclo de vida limpiamente sin contaminar la Activity."
   },
   {
-    question: "¿Cuál es la diferencia práctica entre onStart() y onResume() desde la perspectiva de visibilidad e interactividad?",
-    options: ["No hay diferencia práctica; ambos callbacks son redundantes.", "onStart() señala que la Activity es visible pero no necesariamente interactiva; onResume() señala que está en primer plano y el usuario puede interactuar.", "onStart() inicializa los Composables y onResume() aplica el tema de Material Design 3.", "onStart() registra el NavController y onResume() aplica las transiciones del Predictive Back."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. onStart() marca que la Activity es visible pero puede estar detrás de un diálogo o en modo multiventana. onResume() marca el estado interactivo pleno con el foco del usuario. Esta distinción es importante para decidir dónde registrar sensores."
+    "question": "Para datos que deben sobrevivir a la desinstalación de la app o a reinicios completos del dispositivo físico, ¿qué herramienta de la arquitectura es la indicada?",
+    "options": [
+      "rememberSaveable",
+      "ViewModel con SavedStateHandle",
+      "Persistencia física definitiva mediante Room (base de datos local) o DataStore",
+      "La API retain de Android 16"
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es c. Las herramientas en memoria o en Bundle (ViewModel, SavedStateHandle, retain) solo viven durante el ciclo de vida de la aplicación. Para datos críticos y permanentes se requiere persistencia en disco: Room o DataStore."
   },
   {
-    question: "¿Cuál es el análogo directo de onStart() en el ciclo de vida del UIViewController de iOS?",
-    options: ["viewDidLoad()", "viewWillAppear()", "viewDidAppear()", "viewWillDisappear()"],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La tabla de mapeo: onCreate() ↔ viewDidLoad() (inicialización), onStart() ↔ viewWillAppear() (pantalla a punto de ser visible), onResume() ↔ viewDidAppear() (visible e interactiva). Fundamental para proyectos Kotlin Multiplatform."
+    "question": "Según el Tema 4, ¿cuál es la 'Regla de Oro' en el diseño de interfaces modernas respecto a la fuente de la verdad de los datos?",
+    "options": [
+      "La UI debe almacenar los datos en variables globales para que cualquier Composable pueda editarlos.",
+      "Las peticiones de red deben ejecutarse siempre en el hilo principal para evitar asincronía.",
+      "Cada botón debe tener su propia base de datos SQLite integrada para máxima velocidad.",
+      "La interfaz de usuario (UI) debe derivarse siempre de modelos de datos persistentes y flujos reactivos, nunca ser la dueña del estado."
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. 'La UI debe derivarse siempre de modelos de datos persistentes'. La vista es una representación visual pasajera; la fuente de la verdad reside en el repositorio y la capa de datos."
   },
   {
-    question: "¿Cuál es el riesgo arquitectónico de gestionar el estado de la UI directamente en variables locales de una Activity sin usar ViewModel?",
-    options: ["El compilador K2 no puede inferir los tipos de variables locales, generando errores de Platform Type.", "El Binder IPC no puede acceder a variables locales para sincronizar el estado entre procesos.", "Las variables locales de una Activity son destruidas cuando el sistema rota la pantalla o mata el proceso, causando pérdida de estado y regresión de UX.", "Room Database no puede leer variables locales de Activity, rompiendo la sincronización."],
-    correctIndex: 2,
-    feedback: "La respuesta correcta es c. Antes de ViewModel, los datos guardados en variables de la Activity se perdían al rotar la pantalla porque la Activity era destruida y recreada. ViewModel sobrevive a este ciclo porque no está ligado al ciclo de vida de la Activity sino al de su ViewModelStore."
+    "question": "¿Cuál es la función del callback onRestart() en el ciclo de vida de una Activity?",
+    "options": [
+      "Indicar que la Activity estaba detenida (en estado Stopped tras onStop) y está a punto de volver a iniciarse hacia onStart().",
+      "Reiniciar los contadores de batería y CPU del sistema operativo.",
+      "Borrar la memoria caché generada por Jetpack Compose antes de recomponer.",
+      "Cerrar las conexiones activas con bases de datos Room."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. onRestart() es el callback de transición intermedio que se invoca únicamente cuando una Activity que ya había pasado por onStop() vuelve a ser llamada al frente antes de ejecutar onStart()."
   },
   {
-    question: "¿Cuál es la función de onRestart() en el ciclo de vida de una Activity?",
-    options: ["Se invoca después de onDestroy() para reinstanciar la Activity desde cero, equivalente a un segundo onCreate().", "Se invoca cuando una Activity que estaba completamente oculta (había pasado por onStop()) vuelve a ser visible, justo antes de onStart().", "Se invoca exclusivamente durante cambios de configuración como la rotación, siendo el punto donde el estado del Bundle es restaurado.", "Se invoca cuando el sistema necesita liberar memoria, permitiendo al desarrollador decidir si guarda el estado."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. onRestart() es la reentrada al ciclo visible: cuando una Activity que pasó por onStop() vuelve a ser visible, el sistema llama onRestart() → onStart() → onResume() en lugar del camino inicial onCreate() → onStart() → onResume()."
+    "question": "En el contexto de los cambios de configuración (ej. rotación de pantalla), ¿por qué Android destruye y recrea la Activity por defecto en lugar de simplemente redibujarla?",
+    "options": [
+      "Porque el compilador de Kotlin pierde el mapeo de punteros de memoria durante el giro físico del sensor.",
+      "Para permitir que la aplicación recargue automáticamente los recursos alternativos más apropiados (layouts para orientación horizontal, drawables específicos, densidades de pantalla, idioma o tema).",
+      "Porque la máquina virtual ART necesita vaciar el Garbage Collector obligatoriamente cada 90 grados de giro.",
+      "Para forzar al usuario a iniciar sesión nuevamente como medida de seguridad biométrica."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es b. El propósito fundamental de recrear la Activity es recargar los recursos más adecuados para la nueva configuración del dispositivo (ej. carpetas layout-land, values-night, etc.)."
   },
   {
-    question: "¿Qué afirmación resume la filosofía del Tema 4 sobre por qué estudiar el ciclo de vida es fundamental?",
-    options: ["Para poder aprobar los exámenes de certificación de Google que evalúan el orden exacto de los callbacks.", "Porque el ciclo de vida es el contrato entre el SO y la app: entenderlo es la diferencia entre una app que pierde datos y una que se comporta de forma predecible y robusta.", "Para optimizar el tiempo de arranque (cold start) de la app reduciendo operaciones en onCreate().", "Porque sin entender el ciclo de vida es imposible integrar librerías de terceros como Retrofit o Coil."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. El ciclo de vida es el contrato fundamental entre el SO y la app. Un ingeniero que no lo domina produce apps que pierden el estado del usuario, consumen recursos en segundo plano o se comportan de forma errática. Dominarlo es la diferencia entre código amateur y código de producción profesional."
+    "question": "¿Qué riesgo severo ocurre si un desarrollador utiliza android:configChanges en el AndroidManifest.xml para evitar que el sistema recree su Activity ante una rotación?",
+    "options": [
+      "La aplicación deja de ser compatible con Android Runtime y no compila.",
+      "El sistema operativo revoca los certificados de seguridad de Google Play Store.",
+      "El desarrollador asume la responsabilidad manual de actualizar cada recurso, layout y configuración de UI, lo cual es propenso a inconsistencias visuales, fugas de memoria y fallas de accesibilidad.",
+      "El dispositivo se reinicia automáticamente en modo de recuperación (Recovery)."
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es b. Usar configChanges para eludir el ciclo de vida traslada toda la carga de adaptar recursos manualmente al programador, generando código frágil y desincronizaciones visuales."
   },
   {
-    question: "¿Por qué el Tema 4 advierte que en onPause() no se deben realizar operaciones de guardado que tomen tiempo significativo?",
-    options: ["Porque onPause() se ejecuta en un hilo de baja prioridad y las operaciones de I/O no están permitidas en ese contexto.", "Porque si onPause() tarda mucho, bloquea la transición visual a la siguiente pantalla, haciendo que el usuario perciba que la app congela antes de navegar.", "Porque Room Database y DataStore solo pueden escribir datos durante onStop() o onDestroy().", "Porque el ViewModel es destruido antes de que onPause() comience, haciendo que las referencias a datos sean inválidas."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. Cuando onPause() es llamado, el sistema espera mostrar la siguiente pantalla. Operaciones lentas congela la transición visual. La solución es hacer operaciones ligeras en onPause() y mover las pesadas a onStop() o usar coroutines con lifecycleScope."
+    "question": "En la comparación entre Android (Activity) y iOS (UIViewController), ¿qué etapa del ciclo de vida engloba la ocultación del componente visual?",
+    "options": [
+      "Android: onResume() ⟷ iOS: viewWillAppear()",
+      "Android: onDestroy() ⟷ iOS: viewDidLoad()",
+      "Android: onStart() ⟷ iOS: deinit",
+      "Android: onPause() / onStop() ⟷ iOS: viewWillDisappear() / viewDidDisappear()"
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es a. La etapa de ocultación corresponde a onPause()/onStop() en Android, mientras que en iOS se maneja con la pareja viewWillDisappear()/viewDidDisappear()."
   },
   {
-    question: "¿Cuál es la premisa de diseño que transforma una Activity en un componente robusto ante cambios de configuración?",
-    options: ["Asumir que la Activity nunca será destruida y codificar toda la lógica en sus variables de instancia.", "Diseñar la Activity como una proyección sin estado propio: toda la información reside en el ViewModel y capas de persistencia, de forma que recrearla sea equivalente a redibujarse desde los datos existentes.", "Bloquear los cambios de configuración en el AndroidManifest con android:configChanges.", "Usar exclusivamente onSaveInstanceState() para serializar manualmente toda la UI al Bundle."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La premisa correcta es tratar la Activity como una vista sin estado: no es el repositorio de datos, es solo la pantalla que los muestra. Si el ViewModel contiene el estado de negocio y Room/DataStore la persistencia, recrear la Activity solo significa redibujar desde el estado existente."
+    "question": "Dentro de los cuatro pilares del sistema Android, ¿qué restricción crítica impone Android 16 (API 36) sobre el componente Service?",
+    "options": [
+      "Restricciones severas para iniciar servicios directamente desde segundo plano (background starts), forzando el uso de WorkManager o JobScheduler.",
+      "Los Services no pueden comunicarse con bases de datos locales.",
+      "Obliga a que todos los Services tengan una interfaz gráfica construida en Compose.",
+      "Limita el tamaño del Service en memoria a un máximo estricto de 2 Kilobytes."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. Como señala la slide 9, en API 36 los Services tienen severas restricciones para inicios desde segundo plano para proteger la batería y el rendimiento general del dispositivo."
   },
   {
-    question: "¿Cuál es el riesgo de usar android:configChanges en el Manifest para evitar la recreación de la Activity?",
-    options: ["Que el compilador K2 deshabilita las optimizaciones AOT para esa Activity.", "Que el desarrollador debe gestionar manualmente todos los cambios de configuración (layouts, resources), asumiendo responsabilidades que el framework normalmente manejaría automáticamente, aumentando la deuda técnica.", "Que el BroadcastReceiver de esa Activity pierde la capacidad de escuchar eventos del sistema.", "Que Material You no puede aplicar temas dinámicos a Activities que bloquean los cambios."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. Bloquear configChanges es mala práctica: el desarrollador asume la responsabilidad de manejar manualmente todos los cambios (layouts para diferente orientación, resources localizados, tamaños de fuente). El framework está diseñado para manejar esto automáticamente mediante la recreación."
+    "question": "En los cuatro pilares de Android, ¿qué restricción impone API 36 sobre el BroadcastReceiver para garantizar la estabilidad del sistema?",
+    "options": [
+      "Elimina todos los receptores de eventos del sistema operativo.",
+      "Limita las prioridades en anuncios globales (system broadcasts) para evitar que apps individuales saturen el hilo de eventos del SO.",
+      "Exige que los BroadcastReceiver sean funciones suspendidas de corrutinas.",
+      "Prohíbe escuchar eventos de cambio de batería o modo avión."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es b. En API 36 se limitan las prioridades en los anuncios globales (broadcasts) para impedir que aplicaciones con alta prioridad monopolicen el despachador de eventos del sistema."
   },
   {
-    question: "¿Cuál es el impacto en rendimiento cuando la Activity es destruida y recreada si no se implementó correctamente la persistencia con ViewModel?",
-    options: ["Ninguno, ya que ART mantiene el bytecode .dex compilado en caché y recrea la Activity en microsegundos.", "El desarrollador debe re-ejecutar operaciones costosas (llamadas de red, consultas a DB) si no implementó correctamente la persistencia de estado con ViewModel.", "El Garbage Collector se activa para limpiar la instancia anterior, causando una pausa de GC visible.", "El compilador JIT pierde todas las optimizaciones acumuladas y debe recompilar el código desde el bytecode base."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. Si al rotar la pantalla el ViewModel no persiste el resultado de una llamada de red, la Activity recreada deberá volver a llamar a la API. Esto consume datos del usuario, introduce latencia y puede mostrar una pantalla de carga innecesaria."
+    "question": "¿Por qué mover lógica de procesamiento pesada (como cálculos matemáticos o consultas a red) a los callbacks de ciclo de vida de la UI (onCreate, onStart, onResume) es una pésima práctica arquitectónica?",
+    "options": [
+      "Porque las consultas a red se borran automáticamente al terminar el callback.",
+      "Porque el compilador K2 no permite instanciar variables dentro de callbacks de ciclo de vida.",
+      "Porque esos callbacks se ejecutan en el Hilo Principal (Main Thread), y cualquier bloqueo superior a unos pocos milisegundos congela la pantalla provocando lag o un error ANR (Application Not Responding).",
+      "Porque el consumo de batería se duplica inmediatamente por culpa del sensor giroscópico."
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es a. Todos los callbacks del ciclo de vida se ejecutan en el hilo principal (Main Thread). Saturarlos con lógica pesada degrada la tasa de refresco a menos de 60fps y causa ANRs."
   },
   {
-    question: "Al combinar ViewModel + SavedStateHandle para persistencia, ¿qué tipo de datos puede sobrevivir al Process Death a través de SavedStateHandle?",
-    options: ["Cualquier objeto de Kotlin, incluyendo instancias de clases personalizadas no serializables.", "Solo datos primitivos serializables: Strings, números, Booleans y tipos Parcelable/Serializable compatibles con el Bundle del sistema.", "Objetos grandes como Bitmaps, listas de miles de elementos y streams de audio.", "Únicamente datos de tipo Flow y StateFlow provenientes de Room Database."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. SavedStateHandle persiste datos a través del Bundle del sistema operativo, que tiene limitaciones: solo acepta tipos primitivos, Strings, y objetos Parcelable o Serializable. Para objetos complejos o grandes, la solución correcta es Room Database o DataStore."
+    "question": "Al rotar el dispositivo en un formulario que utiliza solo remember { mutableStateOf(\"\") }, ¿qué le ocurre al texto ingresado por el usuario y por qué?",
+    "options": [
+      "El texto se conserva intacto porque remember guarda los datos en la memoria flash del teléfono.",
+      "El texto se encripta con una clave temporal y requiere autenticación biométrica para reaparecer.",
+      "El texto se transfiere automáticamente a la base de datos Room mediante el compilador de Compose.",
+      "El texto se borra por completo, porque la Activity es destruida y recreada, provocando que la función Composable se ejecute desde cero con su valor inicial."
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. remember solo sobrevive a recomposiciones dentro de la misma instancia de Activity. Al rotar, la Activity se destruye por completo y remember se reinicializa a su valor por defecto vaciando el campo."
   },
   {
-    question: "¿Cuál es la \"crisis de sincronización\" que el Tema 5 atribuye al paradigma imperativo XML+Java y que Compose resuelve estructuralmente?",
-    options: ["La incapacidad de XML para describir animaciones complejas sin código Java adicional.", "La necesidad de actualizar manualmente la UI en cada lugar donde el estado cambia, generando el Efecto Cascada: múltiples fuentes de verdad que pueden quedar desincronizadas y producir bugs visuales difíciles de rastrear.", "La incompatibilidad de las vistas XML con el sistema de tipos de Kotlin, que genera errores de Platform Type.", "La imposibilidad de reutilizar layouts XML entre diferentes Activities sin copiar el código de sincronización."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. El Efecto Cascada es el problema central: cuando el estado se dispersa por múltiples controladores, cada uno debe actualizar la UI manualmente. Si uno olvida llamar a setText() o setVisibility(), la interfaz queda desactualizada. Compose lo resuelve con una única fuente de verdad."
+    "question": "¿Qué par de herramientas de Compose y ViewModel conforma la estrategia más completa para una 'persistencia robusta de formulario' según la práctica del Tema 4?",
+    "options": [
+      "ViewModel + SavedStateHandle (o rememberSaveable en UI) para retención de estado, complementado con Room o DataStore para el guardado automático de borradores.",
+      "Variables globales estáticas + sharedPreferences síncronas.",
+      "retain API para textos + AsyncTask en segundo plano.",
+      "onDestroy() para escribir un archivo de texto en la carpeta raíz del sistema."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. La estrategia recomendada une retención en memoria y Bundle (ViewModel con SavedStateHandle o rememberSaveable para inputs rápidos) y persistencia física (Room o DataStore para persistir borradores de forma duradera)."
   },
   {
-    question: "¿Qué es la Recomposición Inteligente en Jetpack Compose y cuál es su ventaja de rendimiento?",
-    options: ["Es el proceso por el que Compose destruye y recrea todo el árbol de composición cada vez que cualquier estado cambia.", "Es el mecanismo por el que Compose solo vuelve a ejecutar los Composables cuyos parámetros o estado han cambiado, dejando intactos los nodos no afectados.", "Es la capacidad del compilador K2 de precompilar los Composables más usados usando Profile Guided Optimization.", "Es el sistema por el que rememberSaveable detecta cambios de configuración y actualiza el árbol sin recrear la Activity."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La Recomposición Inteligente es la optimización central de Compose: cuando un estado cambia, solo recompone los nodos del árbol que dependen del estado modificado. La analogía del ingeniero: 'Si cambias una celda de Excel, solo se recalculan las fórmulas que dependen de ella'."
+    "question": "¿Cuál es la recomendación del Tema 4 sobre cuándo usar rememberSaveable frente a la API retain de Android 16?",
+    "options": [
+      "Usar retain para números enteros y rememberSaveable para cadenas de texto largas.",
+      "Usar rememberSaveable para inputs de UI simples y serializables (textos, scroll position, selección de pestañas); y retain para objetos pesados no serializables (reproductores, grafos, bitmaps).",
+      "Usar rememberSaveable únicamente en modo horizontal y retain únicamente en modo vertical.",
+      "Usar retain para peticiones HTTP y rememberSaveable para la configuración de idioma."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es b. rememberSaveable empaqueta datos livianos en un Bundle (textos, tabs, scroll); retain retiene en memoria de ejecución objetos pesados que no pueden ni deben serializarse."
   },
   {
-    question: "¿Cuál es el Árbol de Composición en Jetpack Compose y qué información almacena cada nodo?",
-    options: ["Es el grafo de navegación declarativo que conecta las pantallas; cada nodo almacena la ruta y los argumentos del destino.", "Es la estructura jerárquica interna que Compose construye para representar los Composables; cada nodo almacena los parámetros que recibe y el estado que observa.", "Es el árbol del DOM de la UI en XML que el sistema convierte a Composables durante la migración de proyectos legacy.", "Es el grafo de dependencias de Gradle que relaciona los módulos del proyecto."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. El Árbol de Composición es la estructura interna de Compose: cada Composable es un nodo que almacena sus parámetros de entrada y el estado que observa. Esta información permite la Recomposición Inteligente: cuando un estado cambia, Compose navega el árbol y recompone solo los nodos dependientes."
+    "question": "Al analizar la arquitectura de tres capas, ¿por qué la capa de UI NO debe comunicarse directamente con los orígenes de datos (Room / Retrofit) saltándose los Repositorios?",
+    "options": [
+      "Porque Room y Retrofit no pueden compilarse en el mismo archivo que una función Composable.",
+      "Porque el sistema Android lanza una excepción SecurityException si una Activity abre un socket de red.",
+      "Porque acopla rígidamente la vista a la implementación técnica del almacenamiento, destruyendo la modularidad, impidiendo el testeo unitario y violando el principio de separación de responsabilidades.",
+      "Porque las interfaces de Compose solo aceptan datos en formato XML binario."
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es b. Saltar la capa de repositorios/dominio genera acoplamiento fuerte; si cambia la API o la base de datos, la UI se rompería. El repositorio abstrae y desacopla la fuente de los datos."
   },
   {
-    question: "¿Qué problema de rendimiento ocurre al usar Column con forEach para mostrar una lista de 1000 elementos?",
-    options: ["Column con forEach consume demasiada memoria del GPU al renderizar los gradientes de Material Design 3.", "Column con forEach obliga al sistema a componer y mantener en memoria la totalidad de los 1000 elementos simultáneamente, aunque la mayoría no sean visibles.", "Column con forEach no es compatible con el sistema de tipos seguros de navegación de API 36.", "Column con forEach deshabilita la Recomposición Inteligente, forzando a recalcular el árbol completo en cada scroll."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. Column con forEach compone TODOS los elementos en memoria, incluso los fuera de pantalla. La solución es LazyColumn, el equivalente declarativo del RecyclerView: solo compone los elementos visibles actualmente en pantalla."
+    "question": "En el ciclo de vida de una Activity, ¿en qué estado se encuentra la Activity durante el lapso de tiempo en que un diálogo modal semitransparente ocupe parte de la pantalla?",
+    "options": [
+      "En estado Stopped (onStop)",
+      "En estado Restarted (onRestart)",
+      "En estado Destroyed (onDestroy)",
+      "En estado Paused (onPause)"
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. La Activity pasa a estado Paused (onPause) cuando pierde el foco del usuario pero sigue siendo parcial o totalmente visible (por ejemplo detrás de un diálogo modal o en pantalla dividida)."
   },
   {
-    question: "¿Cuál es la equivalencia de Column y Row de Jetpack Compose en SwiftUI?",
-    options: ["Column ↔ ScrollView, Row ↔ NavigationStack", "Column ↔ VStack, Row ↔ HStack", "Column ↔ List, Row ↔ ForEach", "Column ↔ ZStack, Row ↔ LazyGrid"],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La tabla de convergencia establece: Column (vertical) ↔ VStack, Row (horizontal) ↔ HStack. Ambos frameworks comparten la filosofía declarativa moderna con contenedores que organizan hijos verticalmente u horizontalmente."
+    "question": "¿Cuál de los siguientes escenarios provoca que una Activity pase por onPause() y luego onStop(), sin pasar inmediatamente por onDestroy()?",
+    "options": [
+      "El usuario presiona el botón Home o cambia a otra aplicación mediante el selector de tareas recientes.",
+      "Llamar explícitamente al método finish() en un botón de cierre.",
+      "El usuario gira físicamente el teléfono 90 grados.",
+      "El sistema operativo liquida el proceso por falta crítica de memoria RAM."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. Cuando el usuario presiona Home o cambia de app, la Activity pasa a segundo plano: se pausa (onPause) y se detiene (onStop), quedando viva en memoria en la pila del Back Stack."
   },
   {
-    question: "¿Qué es un DSL en el contexto de Jetpack Compose y SwiftUI?",
-    options: ["Un lenguaje de programación completamente nuevo creado por Google y Apple para reemplazar Kotlin y Swift.", "Un lenguaje diseñado para una tarea específica (describir UIs) que vive dentro del lenguaje de propósito general, permitiendo describir interfaces de forma declarativa sin algoritmos complejos.", "Una herramienta de serialización que convierte los Composables al formato JSON para enviar a un servidor de renderizado.", "Un sistema de plantillas XML avanzado que el compilador K2 transforma en código Kotlin durante la compilación."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. Un DSL es 'un lenguaje dentro de un lenguaje': Compose es un DSL de Kotlin para UIs, SwiftUI es un DSL de Swift para el mismo propósito. No se escriben algoritmos: se describe qué se quiere ver. 'El código se convierte en la documentación visual de la interfaz'."
+    "question": "Cuando una Activity detenida en segundo plano (onStop) es reabierta por el usuario, ¿cuál es la secuencia exacta de callbacks que se ejecutan hasta volver a la interactividad?",
+    "options": [
+      "onCreate() ➔ onStart() ➔ onResume()",
+      "onRestart() ➔ onStart() ➔ onResume()",
+      "onResume() ➔ onStart()",
+      "onRestoreInstanceState() ➔ onDestroy()"
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es b. Una Activity que estaba en segundo plano (Stopped) no vuelve a pasar por onCreate(); reingresa ejecutando onRestart() ➔ onStart() (se hace visible) ➔ onResume() (recupera el foco interactivo)."
   },
   {
-    question: "¿Cuál es el equivalente de @State de SwiftUI en Jetpack Compose para manejar estado local?",
-    options: ["SavedStateHandle", "mutableStateOf() dentro de by remember { }", "@Composable con retorno de StateFlow", "LiveData observada con observeAsState()"],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. La tabla comparativa establece: Estado en SwiftUI @State ↔ remember en Compose. El patrón idiomático: `var count by remember { mutableStateOf(0) }`. mutableStateOf crea el estado observable y remember lo conserva entre recomposiciones."
+    "question": "¿Por qué un ViewModel ordinario NO puede prevenir la pérdida de datos cuando el usuario cierra deliberadamente la app barriéndola del menú de tareas recientes?",
+    "options": [
+      "Porque Android 16 borra los ViewModels cada 15 minutos de forma automática.",
+      "Porque los ViewModels requieren obligatoriamente una conexión Wi-Fi para guardar sus datos en el servidor.",
+      "Porque el ViewModel solo vive mientras dure el scope de ciclo de vida de la tarea; al descartar deliberadamente la app, el proceso y su memoria son terminados definitivamente por voluntad del usuario.",
+      "Porque el compilador de Kotlin solo permite retener datos si se utiliza la palabra reservada var."
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es a. El ViewModel gestiona el estado en memoria para cambios de configuración y navegación. Si el usuario descarta intencionalmente la aplicación, su ciclo de vida concluye y el ViewModel se destruye."
   },
   {
-    question: "¿Cuál es la ventaja del patrón UiState con sealed class (Loading, Success, Error) combinado con when en Jetpack Compose?",
-    options: ["Permite serializar el estado al Bundle del sistema para sobrevivir al Process Death sin SavedStateHandle.", "Define un conjunto cerrado y exhaustivo de estados posibles de la pantalla; con when, el compilador exige manejar todos los casos, eliminando estados inconsistentes en la UI.", "Reemplaza el ViewModel como fuente de verdad, permitiendo que los Composables gestionen directamente las llamadas de red.", "Convierte el estado de la UI en un tipo serializable compatible con Room Database para persistencia automática."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. Este es el Escudo del Compilador aplicado al estado de pantalla: sealed class UiState con Loading, Success y Error define todos los estados posibles. when(uiState) obliga a manejar cada caso, eliminando estados inconsistentes: la pantalla nunca puede mostrar datos obsoletos mientras está cargando."
+    "question": "¿Qué representa el estado 'Top Resumed' introducido en las directrices de eficiencia y multi-ventana de Android?",
+    "options": [
+      "La Activity que tiene el mayor porcentaje de memoria heap asignada.",
+      "La clase base de la cual deben heredar todos los componentes Composable de API 36.",
+      "Un estado exclusivo de emuladores para depuración de rendimiento.",
+      "La única Activity con la que el usuario está interactuando activamente en el momento presente, especialmente crítica en entornos multi-ventana o pantallas plegables donde múltiples pantallas son visibles pero solo una es interactiva."
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. En multi-ventana o pantallas plegables varias apps pueden estar en onResume() (visibles y reanudadas), pero solo una tiene el foco activo del usuario: esa es la 'Top Resumed'."
   },
   {
-    question: "¿Qué rol cumple el Modifier en Jetpack Compose y cuál es su equivalente en SwiftUI?",
-    options: ["El Modifier aplica animaciones de transición entre Composables; en SwiftUI equivale a Animation.", "El Modifier funciona como adjetivo que define apariencia y comportamiento de un Composable (padding, tamaño, color); en SwiftUI son los modificadores encadenados con punto (ej. .padding()).", "El Modifier gestiona el estado interno de un Composable; en SwiftUI equivale a @StateObject.", "El Modifier conecta los Composables con el NavController para navegación tipada; en SwiftUI equivale a NavigationLink."],
-    correctIndex: 1,
-    feedback: "La respuesta correcta es b. El Modifier en Compose es el sistema de decoración: se encadenan para aplicar padding, tamaño, colores, bordes, comportamientos de click. El ingeniero lo describe como 'adjetivos que definen la apariencia'. En SwiftUI el equivalente son los modificadores encadenados: .padding(), .background(), .font()."
+    "question": "Al evaluar la arquitectura de componentes efímeros, ¿qué conclusión pedagógica enfatiza el profesor Juan Francisco Chafla sobre el rol del desarrollador móvil?",
+    "options": [
+      "Que el desarrollador debe asumir que los componentes visuales son descartables en cualquier segundo y diseñar la app de modo que la experiencia del usuario sea inmune a la destrucción del entorno.",
+      "Que el desarrollador debe forzar a que su aplicación nunca se detenga manteniendo servicios infinitos en primer plano.",
+      "Que el ciclo de vida de Android será eliminado en futuras versiones para copiar el modelo de ejecución de servidores Linux.",
+      "Que la persistencia de datos solo debe preocupar al equipo de backend, no al desarrollador de la interfaz móvil."
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es b. 'Las apps modernas son ecosistemas de componentes efímeros'. El desarrollador profesional diseña interfaces desacopladas cuya UX no se rompe ni se reinicia cuando el SO destruye y recrea la vista."
+  },
+  {
+    "question": "¿Cuál es la función del método setContentView() en el paradigma clásico de Activities frente al bloque setContent {} en Jetpack Compose?",
+    "options": [
+      "setContentView() conecta la base de datos Room; setContent {} enlaza los servicios en segundo plano.",
+      "setContentView() infla un archivo XML estático en un árbol de objetos View; setContent {} establece una función Composable como la raíz compositiva de la interfaz de usuario.",
+      "setContentView() se llama en onResume(); setContent {} se llama en onDestroy().",
+      "Son idénticos y pueden intercambiarse sin modificar las dependencias del proyecto."
+    ],
+    "correctIndex": 1,
+    "feedback": "La respuesta correcta es a. setContentView() inflaba jerarquías imperativas de Views desde archivos XML; setContent {} define el CompositionContext donde vive el árbol de funciones reactivas de Jetpack Compose."
+  },
+  {
+    "question": "¿Qué consecuencia directa tiene una fuga de memoria provocada por no desregistrar un listener de sensores pesados en onStop()?",
+    "options": [
+      "El teléfono se apaga inmediatamente por sobrecarga eléctrica.",
+      "El compilador K2 marca el proyecto como obsoleto en la siguiente compilación.",
+      "La instancia de la Activity destruida queda retenida en la memoria heap por el SensorManager impidiendo que el Garbage Collector la recolecte, drenando batería y provocando un OutOfMemoryError.",
+      "La aplicación pasa automáticamente al modo oscuro de Material You."
+    ],
+    "correctIndex": 2,
+    "feedback": "La respuesta correcta es b. Si no se libera el listener en onStop(), el gestor del sistema (SensorManager) mantendrá una referencia viva a la Activity destruida, provocando fugas de memoria y eventuales cuelgues por OutOfMemoryError."
+  },
+  {
+    "question": "En una prueba de rotación de pantalla, si un contador implementado dentro de un ViewModel se reinicia a cero al rotar el teléfono, ¿cuál es la causa del error?",
+    "options": [
+      "El sensor giroscópico del teléfono no tiene permisos en el AndroidManifest.xml.",
+      "El compilador ART no admite orientación horizontal en API 36.",
+      "El teléfono tiene activado el modo ahorro de batería.",
+      "El ViewModel fue instanciado manualmente en el cuerpo de la Activity con 'val vm = MyViewModel()' en lugar de delegar su ciclo de vida al sistema con 'by viewModels()'."
+    ],
+    "correctIndex": 3,
+    "feedback": "La respuesta correcta es b. Si se crea el ViewModel llamando a su constructor (MyViewModel()), se crea una nueva instancia en cada recreación; la delegación 'by viewModels()' vincula la instancia al ViewModelStoreOwner para que sobreviva a la rotación."
+  },
+  {
+    "question": "¿Cuál es la jerarquía de llamadas que se ejecuta cuando el usuario presiona el botón físico/gestual de retroceso y la Activity se cierra definitivamente?",
+    "options": [
+      "onPause() ➔ onStop() ➔ onDestroy()",
+      "onStop() ➔ onPause() ➔ onDestroy()",
+      "onDestroy() ➔ onPause() ➔ onStop()",
+      "onRestart() ➔ onDestroy()"
+    ],
+    "correctIndex": 0,
+    "feedback": "La respuesta correcta es a. Al salir definitivamente de la Activity, la degradación pasa ordenadamente por: onPause() (pierde el foco) ➔ onStop() (deja de ser visible) ➔ onDestroy() (limpieza final y liberación del componente)."
   }
 ];
 
