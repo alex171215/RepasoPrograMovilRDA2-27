@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repaso Programación Móvil RDA1</title>
+    <title>Repaso Programación Móvil (RDA1 & RDA2)</title>
     <meta name="description" content="Cuestionario interactivo para repasar conceptos de Programación Móvil RDA1 - Kotlin, Android, OOP y Programación Funcional">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,8 +21,16 @@
     <div id="screen-selection" class="screen-selection">
         <div class="selection-container">
             <div class="selection-header">
-                <h1>📱 Repaso Móvil RDA1</h1>
-                <p>Selecciona el banco de preguntas que quieres estudiar</p>
+                <h1>📱 Repaso Programación Móvil</h1>
+                <p>Bancos de preguntas RDA1 y RDA2 para estudiar y evaluar tus conocimientos</p>
+                <div class="selection-actions" style="margin-top: 14px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary sync-nav-btn" onclick="openSyncModal()" title="Sincronizar progreso entre celular y computadora">
+                        <i data-lucide="refresh-cw"></i> Sincronizar Móvil / PC
+                    </button>
+                    <a href="quiz.html" class="btn btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;" title="Abrir versión Quiz Pro">
+                        <i data-lucide="sparkles"></i> Quiz Standalone
+                    </a>
+                </div>
             </div>
             <div class="bank-grid">
                 <button class="bank-card" id="bank-all" onclick="selectBank('all')">
@@ -183,7 +191,79 @@
         </footer>
     </main>
 
-    <!-- Scripts de preguntas con cache-busting -->
+    
+    <!-- MODAL DE SINCRONIZACIÓN MULTI-DISPOSITIVO -->
+    <div id="sync-modal" class="modal-overlay hidden" onclick="if(event.target === this) closeSyncModal()">
+        <div class="modal-card glass-panel" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <div class="modal-icon"><i data-lucide="refresh-cw"></i></div>
+                    <div>
+                        <h3>Sincronizar Progreso</h3>
+                        <p id="sync-stats-summary" class="sync-subtitle">Celular ⟷ Computadora</p>
+                    </div>
+                </div>
+                <button class="icon-btn modal-close" onclick="closeSyncModal()" title="Cerrar"><i data-lucide="x"></i></button>
+            </div>
+
+            <div class="sync-tabs">
+                <button class="tab-btn active" id="tab-btn-code" onclick="switchSyncTab('code')">
+                    <i data-lucide="smartphone"></i> Enlace / Código
+                </button>
+                <button class="tab-btn" id="tab-btn-file" onclick="switchSyncTab('file')">
+                    <i data-lucide="file-text"></i> Archivo Backup
+                </button>
+            </div>
+
+            <!-- RESULT BANNER -->
+            <div id="sync-result-banner" class="sync-banner hidden"></div>
+
+            <!-- TAB CÓDIGO -->
+            <div id="tab-content-code" class="tab-content">
+                <div class="sync-block">
+                    <label>1. Enlace Mágico (envíatelo por WhatsApp o Telegram):</label>
+                    <div class="sync-input-row">
+                        <input type="text" id="sync-magic-url" readonly placeholder="Generando enlace...">
+                        <button class="btn btn-primary" id="btn-copy-sync-url" onclick="copySyncUrl()">
+                            <i data-lucide="link"></i> Copiar
+                        </button>
+                    </div>
+                    <div style="margin-top: 8px;">
+                        <button class="btn btn-secondary btn-sm" id="btn-copy-sync-code" onclick="copySyncCode()">
+                            <i data-lucide="copy"></i> Copiar solo código
+                        </button>
+                    </div>
+                </div>
+
+                <div class="sync-block" style="margin-top: 16px;">
+                    <label>2. Pegar enlace o código desde tu otro dispositivo:</label>
+                    <textarea id="sync-direct-input" rows="3" placeholder="Pega aquí el enlace de WhatsApp o el código V3 copiado de tu celular o PC..."></textarea>
+                    <button class="btn btn-primary btn-full" style="margin-top: 8px;" onclick="applyDirectSync()">
+                        <i data-lucide="download"></i> Importar y Fusionar Avance
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB ARCHIVO -->
+            <div id="tab-content-file" class="tab-content hidden">
+                <div class="sync-block">
+                    <label>Descargar respaldo completo en archivo JSON:</label>
+                    <button class="btn btn-secondary btn-full" onclick="downloadBackup()">
+                        <i data-lucide="download-cloud"></i> Descargar Progreso (.json)
+                    </button>
+                </div>
+                <div class="sync-block" style="margin-top: 16px;">
+                    <label>Cargar respaldo desde archivo JSON:</label>
+                    <input type="file" id="file-input" accept=".json" style="display:none;" onchange="uploadBackup(event)">
+                    <button class="btn btn-secondary btn-full" onclick="document.getElementById('file-input').click()">
+                        <i data-lucide="upload-cloud"></i> Subir Archivo (.json)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts de preguntas con cache-busting v3.0 -->
     <script src="questions.js?v=2.2"></script>
     <script src="questions_week1.js?v=2.2"></script>
     <script src="questions_week2.js?v=2.2"></script>

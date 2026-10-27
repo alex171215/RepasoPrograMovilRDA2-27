@@ -74,7 +74,8 @@ const elements = {
     scoreCounter: document.getElementById('score-counter'),
     filterModeBanner: document.getElementById('filter-mode-banner'),
     btnShuffle: document.getElementById('btn-shuffle'),
-    btnResetReview: document.getElementById('btn-reset-review')
+    btnResetReview: document.getElementById('btn-reset-review'),
+    btnSync: document.getElementById('btn-sync')
 };
 
 // ================================================================
@@ -99,6 +100,7 @@ function init() {
     }
     loadState();
     setupEventListeners();
+    checkUrlSync();
 
     // Si había un banco activo, volver al quiz directamente
     if (state.currentBank && BANKS[state.currentBank]) {
@@ -505,27 +507,316 @@ function setupEventListeners() {
     elements.btnReset.addEventListener('click', resetProgress);
     elements.btnFilter.addEventListener('click', toggleReviewMode);
     elements.btnHome.addEventListener('click', goHome);
-    elements.btnExitFilter.addEventListener('click', () => {
-        state.reviewMode = false;
-        saveState();
-        renderQuestion();
-    
-    // Event listener adicional de respaldo para tarjetas de banco
+    if (elements.btnExitFilter) {
+        elements.btnExitFilter.addEventListener('click', () => {
+            state.reviewMode = false;
+            saveState();
+            renderQuestion();
+        });
+    }
+
+    // Event listener de respaldo para tarjetas de banco
     document.querySelectorAll('.bank-card').forEach(btn => {
         btn.addEventListener('click', () => {
             const onclickAttr = btn.getAttribute('onclick') || '';
-            const match = onclickAttr.match(/selectBank\(['\"]([^'\"]+)['\"]\)/);
+            const match = onclickAttr.match(/selectBank\(['"]([^'"]+)['"]\)/);
             if (match && match[1]) {
                 selectBank(match[1]);
             }
         });
     });
-});
+
     if (elements.btnShuffle) elements.btnShuffle.addEventListener('click', shuffleQuestions);
     if (elements.btnResetReview) elements.btnResetReview.addEventListener('click', resetReviewProgress);
+    if (elements.btnSync) elements.btnSync.addEventListener('click', openSyncModal);
 }
 
 // ================================================================
+
+// ================================================================
+// SINCRONIZACIÓN MULTI-DISPOSITIVO (LZ-String & Hash URL)
+// ================================================================
+function openSyncModal() {
+    const modal = document.getElementById('sync-modal');
+    if (!modal) return;
+
+    // Calcular estadísticas globales
+    const totalAns = Object.keys(state.answers || {}).length;
+    const totalBookmarks = Object.keys(state.bookmarks || {}).length;
+
+    const statsElem = document.getElementById('sync-stats-summary');
+    if (statsElem) {
+        statsElem.textContent = `${totalAns} respuestas guardadas · ${totalBookmarks} preguntas marcadas 🔖`;
+    }
+
+    // Generar código V3 comprimido
+    try {
+        const payload = {
+            v: 3,
+            answers: state.answers || {},
+            bookmarks: state.bookmarks || {},
+            currentBank: state.currentBank || null,
+            currentIndex: state.currentIndex || 0,
+            ts: Date.now()
+        };
+        const json = JSON.stringify(payload);
+        const lz = (typeof LZString !== 'undefined') ? LZString.compressToEncodedURIComponent(json) : null;
+        const code = lz ? ('V3_' + lz) : btoa(unescape(encodeURIComponent(json)));
+
+        const baseUrl = window.location.origin + window.location.pathname;
+        const magicUrl = baseUrl + '#sync=' + code;
+
+        const magicInput = document.getElementById('sync-magic-url');
+        if (magicInput) magicInput.value = magicUrl;
+
+        window._currentSyncCode = code;
+    } catch (e) {
+        console.error('Error generando sincronización:', e);
+    }
+
+    const banner = document.getElementById('sync-result-banner');
+    if (banner) banner.classList.add('hidden');
+
+    const inputArea = document.getElementById('sync-direct-input');
+    if (inputArea) inputArea.value = '';
+
+    modal.classList.remove('hidden');
+    switchSyncTab('code');
+    if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+}
+
+function closeSyncModal() {
+    const modal = document.getElementById('sync-modal');
+    if (modal) modal.classList.add('hidden');
+}
+
+function switchSyncTab(tab) {
+    const tabCode = document.getElementById('tab-btn-code');
+    const tabFile = document.getElementById('tab-btn-file');
+    const contentCode = document.getElementById('tab-content-code');
+    const contentFile = document.getElementById('tab-content-file');
+
+    if (tab === 'code') {
+        if (tabCode) tabCode.classList.add('active');
+        if (tabFile) tabFile.classList.remove('active');
+        if (contentCode) contentCode.classList.remove('hidden');
+        if (contentFile) contentFile.classList.add('hidden');
+    } else {
+        if (tabCode) tabCode.classList.remove('active');
+        if (tabFile) tabFile.classList.add('active');
+        if (contentCode) contentCode.classList.add('hidden');
+        if (contentFile) contentFile.classList.remove('hidden');
+    }
+}
+
+function copySyncUrl() {
+    const input = document.getElementById('sync-magic-url');
+    if (!input) return;
+    navigator.clipboard.writeText(input.value).then(() => {
+        const btn = document.getElementById('btn-copy-sync-url');
+        if (btn) {
+            const orig = btn.innerHTML;
+            btn.innerHTML = '✓ ¡Copiado!';
+            setTimeout(() => { btn.innerHTML = orig; if (typeof lucide !== 'undefined') lucide.createIcons(); }, 2000);
+        }
+    }).catch(err => {
+        input.select();
+        document.execCommand('copy');
+        alert('Enlace copiado al portapapeles');
+    });
+}
+
+function copySyncCode() {
+    const code = window._currentSyncCode || '';
+    if (!code) return;
+    navigator.clipboard.writeText(code).then(() => {
+        const btn = document.getElementById('btn-copy-sync-code');
+        if (btn) {
+            const orig = btn.innerHTML;
+            btn.innerHTML = '✓ Código Copiado';
+            setTimeout(() => { btn.innerHTML = orig; if (typeof lucide !== 'undefined') lucide.createIcons(); }, 2000);
+        }
+    }).catch(err => {
+        prompt('Copia tu código de sincronización:', code);
+    });
+}
+
+function decodeSyncString(inputStr) {
+    let clean = (inputStr || '').trim();
+    if (clean.includes('sync=')) {
+        clean = clean.split('sync=')[1].split('&')[0].split('#')[0].split(/\s+/)[0];
+    }
+
+    let jsonStr = null;
+
+    // 1. Intentar V3 LZ-String
+    if (clean.startsWith('V3_') && typeof LZString !== 'undefined') {
+        const rawLz = clean.substring(3);
+        jsonStr = LZString.decompressFromEncodedURIComponent(rawLz) ||
+                  LZString.decompressFromBase64(rawLz) ||
+                  LZString.decompress(rawLz);
+    }
+
+    // 2. Intentar lz: prefix
+    if (!jsonStr && clean.startsWith('lz:') && typeof LZString !== 'undefined') {
+        const rawLz = clean.substring(3);
+        jsonStr = LZString.decompressFromEncodedURIComponent(rawLz) ||
+                  LZString.decompressFromBase64(rawLz) ||
+                  LZString.decompress(rawLz);
+    }
+
+    // 3. Intentar decompressFromEncodedURIComponent directo
+    if (!jsonStr && typeof LZString !== 'undefined') {
+        jsonStr = LZString.decompressFromEncodedURIComponent(clean);
+    }
+
+    // 4. Intentar Base64
+    if (!jsonStr) {
+        try {
+            jsonStr = decodeURIComponent(escape(atob(clean)));
+        } catch (e) {}
+    }
+
+    // 5. Intentar JSON plano
+    if (!jsonStr && clean.startsWith('{')) {
+        jsonStr = clean;
+    }
+
+    if (!jsonStr) {
+        throw new Error('El código o enlace no pudo ser procesado. Verifica haber copiado el texto completo.');
+    }
+
+    return JSON.parse(jsonStr);
+}
+
+function applyDirectSync(optionalStr) {
+    const banner = document.getElementById('sync-result-banner');
+    try {
+        const str = optionalStr || document.getElementById('sync-direct-input')?.value;
+        if (!str || str.trim().length === 0) {
+            alert('Por favor pega el enlace o código que copiaste de tu otro dispositivo.');
+            return;
+        }
+
+        const data = decodeSyncString(str);
+        const importedAnswers = data.answers || (data.state ? data.state.answers : {}) || {};
+        const importedBookmarks = data.bookmarks || (data.state ? data.state.bookmarks : {}) || {};
+
+        const beforeAnsCount = Object.keys(state.answers).length;
+        const beforeBookCount = Object.keys(state.bookmarks).length;
+
+        // Fusión inteligente: preservar respuestas existentes y añadir las importadas
+        Object.assign(state.answers, importedAnswers);
+
+        // Fusión de marcadores (unión)
+        Object.assign(state.bookmarks, importedBookmarks);
+
+        // Si incluye banco válido, seleccionarlo
+        if (data.currentBank && BANKS[data.currentBank]) {
+            state.currentBank = data.currentBank;
+            if (typeof data.currentIndex === 'number') {
+                state.currentIndex = data.currentIndex;
+            }
+        }
+
+        saveState();
+
+        const afterAnsCount = Object.keys(state.answers).length;
+        const afterBookCount = Object.keys(state.bookmarks).length;
+        const addedAnswers = afterAnsCount - beforeAnsCount;
+
+        if (banner) {
+            banner.className = 'sync-banner success';
+            banner.innerHTML = `
+                <strong>🎉 ¡Sincronización Exitosa!</strong><br>
+                Total actual: <strong>${afterAnsCount}</strong> respuestas registradas (${addedAnswers >= 0 ? '+' + addedAnswers : ''} nuevas) y <strong>${afterBookCount}</strong> preguntas marcadas 🔖.
+            `;
+            banner.classList.remove('hidden');
+        }
+
+        // Si el quiz está visible y activo, recargar preguntas
+        if (state.currentBank && BANKS[state.currentBank] && screenQuiz && !screenQuiz.classList.contains('hidden')) {
+            startQuiz(state.currentBank, false);
+        }
+
+        if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+    } catch (err) {
+        console.error('Error aplicando sincronización:', err);
+        if (banner) {
+            banner.className = 'sync-banner error';
+            banner.innerHTML = `<strong>⚠️ Error al sincronizar:</strong> ${err.message || 'Código inválido'}`;
+            banner.classList.remove('hidden');
+        } else {
+            alert('Error al sincronizar: ' + err.message);
+        }
+    }
+}
+
+function checkUrlSync() {
+    if (window.location.hash && window.location.hash.includes('sync=')) {
+        try {
+            applyDirectSync(window.location.hash);
+            history.replaceState(null, '', window.location.pathname);
+            openSyncModal();
+        } catch (e) {
+            console.warn('Auto-sync hash notice:', e);
+        }
+    }
+}
+
+function downloadBackup() {
+    const payload = {
+        app: 'RepasoPrograMovilRDA',
+        version: '3.0',
+        exportedAt: new Date().toISOString(),
+        state: state
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `repaso_movil_backup_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function uploadBackup(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            const imported = data.state || data;
+            if (imported.answers) Object.assign(state.answers, imported.answers);
+            if (imported.bookmarks) Object.assign(state.bookmarks, imported.bookmarks);
+            if (imported.currentBank && BANKS[imported.currentBank]) {
+                state.currentBank = imported.currentBank;
+            }
+            saveState();
+            alert('¡Respaldo importado exitosamente!');
+            closeSyncModal();
+            if (state.currentBank && BANKS[state.currentBank]) {
+                startQuiz(state.currentBank, false);
+            }
+        } catch (err) {
+            alert('Error al leer el archivo JSON: ' + err.message);
+        }
+    };
+    reader.readAsText(file);
+}
+
+if (typeof window !== 'undefined') {
+    window.openSyncModal = openSyncModal;
+    window.closeSyncModal = closeSyncModal;
+    window.switchSyncTab = switchSyncTab;
+    window.copySyncUrl = copySyncUrl;
+    window.copySyncCode = copySyncCode;
+    window.applyDirectSync = applyDirectSync;
+    window.downloadBackup = downloadBackup;
+    window.uploadBackup = uploadBackup;
+}
+
 // START
 // ================================================================
 document.addEventListener('DOMContentLoaded', init);
