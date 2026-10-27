@@ -581,13 +581,17 @@ function openSyncModal() {
     if (inputArea) inputArea.value = '';
 
     modal.classList.remove('hidden');
+    modal.style.display = 'flex';
     switchSyncTab('code');
     if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
 }
 
 function closeSyncModal() {
     const modal = document.getElementById('sync-modal');
-    if (modal) modal.classList.add('hidden');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+    }
 }
 
 function switchSyncTab(tab) {

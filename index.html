@@ -8,8 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=3.2">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
 </head>
 <body>
     <div class="background-elements">
@@ -23,13 +24,10 @@
             <div class="selection-header">
                 <h1>📱 Repaso Programación Móvil</h1>
                 <p>Bancos de preguntas RDA1 y RDA2 para estudiar y evaluar tus conocimientos</p>
-                <div class="selection-actions" style="margin-top: 14px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                    <button class="btn btn-secondary sync-nav-btn" onclick="openSyncModal()" title="Sincronizar progreso entre celular y computadora">
+                <div class="selection-actions" style="margin-top: 14px; display: flex; justify-content: center; gap: 10px;">
+                    <button class="btn btn-secondary sync-nav-btn" id="btn-sync-home" onclick="openSyncModal()" title="Sincronizar progreso entre celular y computadora">
                         <i data-lucide="refresh-cw"></i> Sincronizar Móvil / PC
                     </button>
-                    <a href="quiz.html" class="btn btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;" title="Abrir versión Quiz Pro">
-                        <i data-lucide="sparkles"></i> Quiz Standalone
-                    </a>
                 </div>
             </div>
             <div class="bank-grid">
@@ -193,7 +191,7 @@
 
     
     <!-- MODAL DE SINCRONIZACIÓN MULTI-DISPOSITIVO -->
-    <div id="sync-modal" class="modal-overlay hidden" onclick="if(event.target === this) closeSyncModal()">
+    <div id="sync-modal" class="modal-overlay hidden" style="display: none; position: fixed; inset: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 999999; align-items: center; justify-content: center; padding: 1rem;" onclick="if(event.target === this) closeSyncModal()">
         <div class="modal-card glass-panel" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <div class="modal-title-wrap">
@@ -263,14 +261,14 @@
         </div>
     </div>
 
-    <!-- Scripts de preguntas con cache-busting v3.0 -->
-    <script src="questions.js?v=2.2"></script>
-    <script src="questions_week1.js?v=2.2"></script>
-    <script src="questions_week2.js?v=2.2"></script>
-    <script src="questions_week3.js?v=2.2"></script>
-    <script src="questions_rda2_tema4.js?v=2.2"></script>
-    <script src="questions_rda2_tema56.js?v=2.2"></script>
-    <script src="questions_rda2_tema78.js?v=2.2"></script>
-    <script src="app.js?v=2.2"></script>
+    <!-- Scripts de preguntas con cache-busting v3.2 -->
+    <script src="questions.js?v=3.2"></script>
+    <script src="questions_week1.js?v=3.2"></script>
+    <script src="questions_week2.js?v=3.2"></script>
+    <script src="questions_week3.js?v=3.2"></script>
+    <script src="questions_rda2_tema4.js?v=3.2"></script>
+    <script src="questions_rda2_tema56.js?v=3.2"></script>
+    <script src="questions_rda2_tema78.js?v=3.2"></script>
+    <script src="app.js?v=3.2"></script>
 </body>
 </html>
