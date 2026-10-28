@@ -76,6 +76,13 @@ const elements = {
     filterModeBanner: document.getElementById('filter-mode-banner'),
     btnShuffle: document.getElementById('btn-shuffle'),
     btnResetReview: document.getElementById('btn-reset-review'),
+    btnNavGrid: document.getElementById('btn-nav-grid'),
+    btnNavGridFooter: document.getElementById('btn-nav-grid-footer'),
+    btnFloatingNav: document.getElementById('btn-floating-nav'),
+    navDrawerOverlay: document.getElementById('nav-drawer-overlay'),
+    navQuestionsGrid: document.getElementById('nav-questions-grid'),
+    navDrawerBankName: document.getElementById('nav-drawer-bank-name'),
+    navAnsweredBadge: document.getElementById('nav-answered-badge'),
     btnSync: document.getElementById('btn-sync')
 };
 
@@ -202,6 +209,7 @@ function startQuiz(bankName, reset) {
 function goHome() {
     screenQuiz.classList.add('hidden');
     screenSelection.classList.remove('hidden');
+    closeNavDrawer();
     // Reset feedback container
     if (elements.feedbackContainer) {
         elements.feedbackContainer.classList.add('hidden');
@@ -314,6 +322,10 @@ function renderQuestion() {
 
     updateControls(validIndices);
     updateProgress();
+    const overlay = document.getElementById('nav-drawer-overlay');
+    if (overlay && !overlay.classList.contains('hidden')) {
+        renderNavGrid();
+    }
 }
 
 // ================================================================
@@ -556,6 +568,9 @@ function setupEventListeners() {
     elements.btnReset.addEventListener('click', resetProgress);
     elements.btnFilter.addEventListener('click', toggleReviewMode);
     elements.btnHome.addEventListener('click', goHome);
+    if (elements.btnNavGrid) elements.btnNavGrid.addEventListener('click', openNavDrawer);
+    if (elements.btnNavGridFooter) elements.btnNavGridFooter.addEventListener('click', openNavDrawer);
+    if (elements.btnFloatingNav) elements.btnFloatingNav.addEventListener('click', openNavDrawer);
     if (elements.btnExitFilter) {
         elements.btnExitFilter.addEventListener('click', () => {
             state.reviewMode = false;
@@ -874,3 +889,133 @@ if (typeof window !== 'undefined') {
 // START
 // ================================================================
 document.addEventListener('DOMContentLoaded', init);
+
+
+// ================================================================
+// PANEL LATERAL DE NAVEGACIÓN (DRAWER / MAPA DE PREGUNTAS)
+// ================================================================
+function openNavDrawer() {
+    const overlay = document.getElementById('nav-drawer-overlay');
+    if (!overlay) return;
+
+    const bankNameEl = document.getElementById('nav-drawer-bank-name');
+    if (bankNameEl) {
+        if (state.reviewMode) {
+            bankNameEl.textContent = (BANKS[state.currentBank] ? BANKS[state.currentBank].name : 'Cuestionario') + ' (Modo Repaso)';
+        } else {
+            bankNameEl.textContent = BANKS[state.currentBank] ? BANKS[state.currentBank].name : 'Banco Activo';
+        }
+    }
+
+    renderNavGrid();
+    overlay.classList.remove('hidden');
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+    }
+}
+
+function closeNavDrawer() {
+    const overlay = document.getElementById('nav-drawer-overlay');
+    if (overlay) {
+        overlay.classList.add('hidden');
+    }
+}
+
+function renderNavGrid() {
+    const grid = document.getElementById('nav-questions-grid');
+    const badge = document.getElementById('nav-answered-badge');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+
+    const validIndices = getFilteredIndices();
+    let answeredCount = 0;
+
+    validIndices.forEach(idx => {
+        const key = makeKey(idx);
+        if (state.answers[key] !== undefined) {
+            answeredCount++;
+        }
+    });
+
+    if (badge) {
+        badge.textContent = answeredCount + '/' + validIndices.length + ' Resp.';
+    }
+
+    validIndices.forEach((questionIdx, position) => {
+        const q = activeQuestions[questionIdx];
+        if (!q) return;
+
+        const key = makeKey(questionIdx);
+        const isCurrent = (questionIdx === state.currentIndex);
+        const ans = state.answers[key];
+        const isAnswered = (ans !== undefined);
+        const isMarked = !!state.bookmarks[key];
+        const isCorrect = isAnswered && (ans === q.correctIndex);
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'nav-grid-btn';
+        btn.textContent = (questionIdx + 1);
+        btn.title = 'Pregunta ' + (questionIdx + 1) + 
+            (isMarked ? ' (Marcada)' : '') + 
+            (isAnswered ? (isCorrect ? ' - Correcta' : ' - Incorrecta') : ' - Pendiente');
+
+        if (isMarked && isAnswered) {
+            btn.classList.add(isCorrect ? 'nav-btn-marked-correct' : 'nav-btn-marked-incorrect');
+        } else if (isMarked && !isAnswered) {
+            btn.classList.add('nav-btn-marked');
+        } else if (isAnswered) {
+            btn.classList.add(isCorrect ? 'nav-btn-correct' : 'nav-btn-incorrect');
+        } else {
+            btn.classList.add('nav-btn-pending');
+        }
+
+        if (isCurrent) {
+            btn.classList.add('nav-btn-current');
+        }
+
+        btn.addEventListener('click', () => {
+            jumpToQuestion(questionIdx);
+        });
+
+        grid.appendChild(btn);
+    });
+}
+
+function jumpToQuestion(index) {
+    if (index < 0 || index >= activeQuestions.length) return;
+    state.currentIndex = index;
+    saveState();
+    renderQuestion();
+    closeNavDrawer();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function jumpToFirstUnanswered() {
+    const validIndices = getFilteredIndices();
+    const firstUnanswered = validIndices.find(idx => {
+        const key = makeKey(idx);
+        return state.answers[key] === undefined;
+    });
+
+    if (firstUnanswered !== undefined) {
+        jumpToQuestion(firstUnanswered);
+    } else {
+        alert('🎉 ¡Todas las preguntas de este banco ya están respondidas!');
+    }
+}
+
+// Exponer en window para compatibilidad inline onclick y atajos
+window.openNavDrawer = openNavDrawer;
+window.closeNavDrawer = closeNavDrawer;
+window.renderNavGrid = renderNavGrid;
+window.jumpToQuestion = jumpToQuestion;
+window.jumpToFirstUnanswered = jumpToFirstUnanswered;
+
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeNavDrawer();
+        if (typeof closeSyncModal === 'function') closeSyncModal();
+    }
+});

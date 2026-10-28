@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=3.4">
+    <link rel="stylesheet" href="styles.css?v=3.5">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
 </head>
@@ -136,6 +136,9 @@
                     <button id="btn-filter" class="icon-btn" title="Modo Repaso (Marcadas/Erróneas)">
                         <i data-lucide="filter"></i>
                     </button>
+                    <button id="btn-nav-grid" class="icon-btn" onclick="openNavDrawer()" title="Mapa de Preguntas (Navegación Rápida)">
+                        <i data-lucide="layout-grid"></i>
+                    </button>
                 </div>
             </div>
             <div class="progress-container">
@@ -179,9 +182,18 @@
             </div>
         </section>
 
+        <!-- BOTÓN FLOTANTE AL LADO DERECHO PARA ABRIR EL MAPA DE PREGUNTAS -->
+        <button id="btn-floating-nav" class="floating-nav-btn" onclick="openNavDrawer()" title="Abrir panel de navegación de preguntas">
+            <i data-lucide="layout-grid"></i>
+            <span class="floating-nav-text">Mapa</span>
+        </button>
+
         <footer class="navigation">
             <button id="btn-prev" class="btn btn-secondary" disabled>
                 <i data-lucide="arrow-left"></i> Anterior
+            </button>
+            <button id="btn-nav-grid-footer" class="btn btn-secondary nav-footer-btn" onclick="openNavDrawer()" title="Ver tabla de navegación">
+                <i data-lucide="layout-grid"></i> Mapa
             </button>
             <button id="btn-next" class="btn btn-primary">
                 Siguiente <i data-lucide="arrow-right"></i>
@@ -190,6 +202,58 @@
     </main>
 
     
+    <!-- PANEL LATERAL DE NAVEGACIÓN (DRAWER / MAPA DE PREGUNTAS ESTILO REPASO IA) -->
+    <div id="nav-drawer-overlay" class="drawer-overlay hidden" onclick="if(event.target === this) closeNavDrawer()">
+        <aside class="nav-drawer" onclick="event.stopPropagation()">
+            <div class="nav-drawer-header">
+                <div class="nav-drawer-title-wrap">
+                    <div class="nav-drawer-icon">
+                        <i data-lucide="layout-grid"></i>
+                    </div>
+                    <div>
+                        <h3 class="nav-drawer-title">Mapa de Preguntas</h3>
+                        <p id="nav-drawer-bank-name" class="nav-drawer-subtitle">Banco Activo</p>
+                    </div>
+                </div>
+                <div class="nav-drawer-header-right">
+                    <span id="nav-answered-badge" class="nav-badge">0/0 Resp.</span>
+                    <button class="icon-btn nav-drawer-close" onclick="closeNavDrawer()" title="Cerrar panel">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="nav-drawer-body">
+                <p class="nav-drawer-hint">Toca cualquier número para saltar directamente a esa pregunta sin tener que dar siguiente tantas veces:</p>
+                <div class="nav-grid-scroll">
+                    <div id="nav-questions-grid" class="nav-questions-grid">
+                        <!-- Generado dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- LEYENDA VISUAL (Estilo Repaso IA) -->
+                <div class="nav-legend">
+                    <div class="legend-item"><span class="legend-swatch legend-current"></span> Actual</div>
+                    <div class="legend-item"><span class="legend-swatch legend-correct"></span> Correcta</div>
+                    <div class="legend-item"><span class="legend-swatch legend-incorrect"></span> Incorrecta</div>
+                    <div class="legend-item"><span class="legend-swatch legend-marked"></span> Marcada</div>
+                    <div class="legend-item"><span class="legend-swatch legend-marked-correct"></span> Marcada + Correcta</div>
+                    <div class="legend-item"><span class="legend-swatch legend-marked-incorrect"></span> Marcada + Incorrecta</div>
+                    <div class="legend-item"><span class="legend-swatch legend-pending"></span> Pendiente</div>
+                </div>
+            </div>
+
+            <div class="nav-drawer-footer">
+                <button id="btn-nav-jump-unanswered" class="btn btn-secondary btn-sm" onclick="jumpToFirstUnanswered()">
+                    <i data-lucide="skip-forward"></i> 1ª Pendiente
+                </button>
+                <button class="btn btn-primary btn-sm" onclick="closeNavDrawer()">
+                    Cerrar Panel
+                </button>
+            </div>
+        </aside>
+    </div>
+
     <!-- MODAL DE SINCRONIZACIÓN MULTI-DISPOSITIVO -->
     <div id="sync-modal" class="modal-overlay hidden" style="display: none; position: fixed; inset: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 999999; align-items: center; justify-content: center; padding: 1rem;" onclick="if(event.target === this) closeSyncModal()">
         <div class="modal-card glass-panel" onclick="event.stopPropagation()">
@@ -262,13 +326,13 @@
     </div>
 
     <!-- Scripts de preguntas con cache-busting v3.2 -->
-    <script src="questions.js?v=3.4"></script>
-    <script src="questions_week1.js?v=3.4"></script>
-    <script src="questions_week2.js?v=3.4"></script>
-    <script src="questions_week3.js?v=3.4"></script>
-    <script src="questions_rda2_tema4.js?v=3.4"></script>
-    <script src="questions_rda2_tema56.js?v=3.4"></script>
-    <script src="questions_rda2_tema78.js?v=3.4"></script>
-    <script src="app.js?v=3.4"></script>
+    <script src="questions.js?v=3.5"></script>
+    <script src="questions_week1.js?v=3.5"></script>
+    <script src="questions_week2.js?v=3.5"></script>
+    <script src="questions_week3.js?v=3.5"></script>
+    <script src="questions_rda2_tema4.js?v=3.5"></script>
+    <script src="questions_rda2_tema56.js?v=3.5"></script>
+    <script src="questions_rda2_tema78.js?v=3.5"></script>
+    <script src="app.js?v=3.5"></script>
 </body>
 </html>
