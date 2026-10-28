@@ -1228,3 +1228,84 @@ h1 {
         font-size: 0.8rem;
     }
 }
+
+
+/* ================================================================
+   ESTILOS DE RETROALIMENTACIÓN PEDAGÓGICA (CORRECTA / INCORRECTA)
+   ================================================================ */
+.feedback-pure-explanation {
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: #f1f5f9;
+}
+
+.feedback-wrong-block {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.feedback-section {
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.feedback-section-wrong {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-left: 4px solid #ef4444;
+}
+
+.feedback-section-correct {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    border-left: 4px solid #10b981;
+}
+
+.feedback-section-title {
+    font-size: 0.84rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.feedback-section-wrong .feedback-section-title {
+    color: #fca5a5;
+}
+
+.feedback-section-correct .feedback-section-title {
+    color: #6ee7b7;
+}
+
+.feedback-option-quote {
+    font-style: italic;
+    color: #cbd5e1;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    border-left: 2px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.feedback-reason {
+    color: #f8fafc;
+    font-size: 0.92rem;
+    line-height: 1.55;
+}
+
+.feedback-reason strong {
+    color: #ffffff;
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}

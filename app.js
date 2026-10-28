@@ -311,7 +311,62 @@ function renderQuestion() {
         elements.feedbackContainer.classList.add(isCorrect ? 'correct' : 'incorrect');
         elements.feedbackTitle.textContent = isCorrect ? "¡Excelente!" : "Respuesta Incorrecta";
         elements.feedbackIcon.setAttribute('data-lucide', isCorrect ? 'check-circle' : 'x-circle');
-        elements.feedbackText.textContent = question.feedback;
+
+        function extractCleanExplanation(q) {
+            let fb = (q.feedback || '').trim();
+            const prefix = 'La respuesta correcta es: ';
+            if (fb.startsWith(prefix)) fb = fb.substring(prefix.length).trim();
+            const correctOpt = (q.options && q.options[q.correctIndex] ? q.options[q.correctIndex] : '').trim();
+            if (correctOpt && fb.startsWith(correctOpt)) {
+                return fb.substring(correctOpt.length).replace(/^[\.\s,;:]+/, '').trim();
+            }
+            return fb;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        const cleanExp = extractCleanExplanation(question);
+
+        if (isCorrect) {
+            elements.feedbackText.innerHTML = `<div class="feedback-pure-explanation"><p>${escapeHtml(cleanExp)}</p></div>`;
+        } else {
+            const selectedLetter = letters[selectedAnswer] || '?';
+            const correctLetter = letters[question.correctIndex] || '?';
+            const selectedOptText = question.options[selectedAnswer] || '';
+            const correctOptText = question.options[question.correctIndex] || '';
+
+            let distractorWhy = (question.distractorReasons && question.distractorReasons[selectedAnswer])
+                ? question.distractorReasons[selectedAnswer]
+                : `Esta opción es incorrecta porque contradice los fundamentos técnicos evaluados en la pregunta.`;
+
+            elements.feedbackText.innerHTML = `
+                <div class="feedback-wrong-block">
+                    <div class="feedback-section feedback-section-wrong">
+                        <div class="feedback-section-title">
+                            <span>❌ Tu selección (Opción ${selectedLetter}):</span>
+                        </div>
+                        <p class="feedback-option-quote">"${escapeHtml(selectedOptText)}"</p>
+                        <p class="feedback-reason"><strong>¿Por qué es incorrecta?</strong> ${escapeHtml(distractorWhy)}</p>
+                    </div>
+
+                    <div class="feedback-section feedback-section-correct">
+                        <div class="feedback-section-title">
+                            <span>✓ Respuesta correcta (Opción ${correctLetter}):</span>
+                        </div>
+                        <p class="feedback-option-quote">"${escapeHtml(correctOptText)}"</p>
+                        <p class="feedback-reason"><strong>¿Por qué esta es la correcta?</strong> ${escapeHtml(cleanExp)}</p>
+                    </div>
+                </div>
+            `;
+        }
         lucide.createIcons();
     }
 
