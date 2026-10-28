@@ -43,6 +43,7 @@ const state = {
     answers: {},   // "bankName_index" -> selectedOptionIndex
     bookmarks: {}, // "bankName_index" -> boolean
     reviewMode: false,
+    reviewQueue: null, // [index, index, ...] para mantener fijas las preguntas en repaso
     currentBank: null,
     shuffleState: null
 };
@@ -117,6 +118,7 @@ function loadState() {
             state.answers = parsed.answers || {};
             state.bookmarks = parsed.bookmarks || {};
             state.reviewMode = parsed.reviewMode || false;
+            state.reviewQueue = Array.isArray(parsed.reviewQueue) ? parsed.reviewQueue : null;
             state.currentBank = parsed.currentBank || null;
             state.shuffleState = parsed.shuffleState || null;
         } catch (e) {
@@ -180,6 +182,7 @@ function startQuiz(bankName, reset) {
     if (reset) {
         state.currentIndex = 0;
         state.reviewMode = false;
+        state.reviewQueue = null;
     }
 
     // Asegurarse de que el índice es válido
@@ -214,9 +217,15 @@ function getFilteredIndices() {
         return activeQuestions.map((_, i) => i);
     }
 
+    // Si ya existe una lista de repaso congelada, usarla
+    if (state.reviewQueue && Array.isArray(state.reviewQueue) && state.reviewQueue.length > 0) {
+        return state.reviewQueue.filter(i => i >= 0 && i < activeQuestions.length);
+    }
+
+    // De lo contrario, calcular candidatos (marcadas con bookmark O respondidas incorrectamente)
     return activeQuestions.map((_, i) => i).filter(i => {
         const key = makeKey(i);
-        const isBookmarked = state.bookmarks[key];
+        const isBookmarked = !!state.bookmarks[key];
         const isAnsweredIncorrectly = state.answers[key] !== undefined &&
             state.answers[key] !== activeQuestions[i].correctIndex;
         return isBookmarked || isAnsweredIncorrectly;
@@ -319,36 +328,22 @@ function handleOptionClick(optionIndex) {
 
 function nextQuestion() {
     const validIndices = getFilteredIndices();
-    let nextIndex = -1;
-    for (let idx of validIndices) {
-        if (idx > state.currentIndex) {
-            nextIndex = idx;
-            break;
-        }
-    }
-
-    if (nextIndex !== -1) {
-        state.currentIndex = nextIndex;
+    const currPos = validIndices.indexOf(state.currentIndex);
+    if (currPos !== -1 && currPos < validIndices.length - 1) {
+        state.currentIndex = validIndices[currPos + 1];
         saveState();
         renderQuestion();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-        alert('🎉 ¡Has llegado al final de este banco de preguntas!\nRevisa tu puntuación en el contador superior.');
+        alert(state.reviewMode ? '🎉 ¡Has llegado al final de las preguntas en repaso!' : '🎉 ¡Has llegado al final de este banco de preguntas!\nRevisa tu puntuación en el contador superior.');
     }
 }
 
 function prevQuestion() {
     const validIndices = getFilteredIndices();
-    let prevIndex = -1;
-    for (let i = validIndices.length - 1; i >= 0; i--) {
-        if (validIndices[i] < state.currentIndex) {
-            prevIndex = validIndices[i];
-            break;
-        }
-    }
-
-    if (prevIndex !== -1) {
-        state.currentIndex = prevIndex;
+    const currPos = validIndices.indexOf(state.currentIndex);
+    if (currPos > 0) {
+        state.currentIndex = validIndices[currPos - 1];
         saveState();
         renderQuestion();
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -367,12 +362,22 @@ function toggleBookmark() {
 }
 
 function resetReviewProgress() {
-    if (confirm("¿Seguro que quieres borrar tus respuestas de las preguntas que estás repasando para volver a intentarlas? (Asegúrate de marcarlas con 📌 para que no desaparezcan del repaso)")) {
-        const validIndices = getFilteredIndices();
-        validIndices.forEach(idx => {
+    const queue = getFilteredIndices();
+    if (!queue || queue.length === 0) {
+        alert("No hay preguntas marcadas ni erróneas en repaso para reiniciar.");
+        return;
+    }
+
+    if (confirm(`¿Deseas reiniciar solo las ${queue.length} preguntas en modo repaso para volver a resolverlas?\n\n(Las respuestas correctas de las demás preguntas del banco se mantendrán intactas).`)) {
+        queue.forEach(idx => {
             const key = makeKey(idx);
-            delete state.answers[key];
+            delete state.answers[key]; // Borra la respuesta SOLO de esta pregunta en repaso
         });
+
+        // Fijar la cola de repaso para que las preguntas NO desaparezcan
+        state.reviewQueue = [...queue];
+        state.currentIndex = state.reviewQueue[0];
+
         saveState();
         renderQuestion();
     }
@@ -407,23 +412,51 @@ function shuffleQuestions() {
 
 function toggleReviewMode() {
     state.reviewMode = !state.reviewMode;
-    const valid = getFilteredIndices();
-    if (state.reviewMode && valid.length > 0 && !valid.includes(state.currentIndex)) {
-        state.currentIndex = valid[0];
+
+    if (state.reviewMode) {
+        // Al entrar a modo repaso, congelamos la lista de preguntas pendientes (marcadas o incorrectas)
+        const candidates = activeQuestions.map((_, i) => i).filter(i => {
+            const key = makeKey(i);
+            const isBookmarked = !!state.bookmarks[key];
+            const isAnsweredIncorrectly = state.answers[key] !== undefined &&
+                state.answers[key] !== activeQuestions[i].correctIndex;
+            return isBookmarked || isAnsweredIncorrectly;
+        });
+
+        if (candidates.length === 0) {
+            state.reviewMode = false;
+            state.reviewQueue = null;
+            saveState();
+            alert("No tienes preguntas marcadas con 📌 ni respondidas incorrectamente en este banco para repasar.");
+            return;
+        }
+
+        state.reviewQueue = candidates;
+        state.currentIndex = candidates[0];
+    } else {
+        // Al salir de modo repaso, liberamos la cola
+        state.reviewQueue = null;
     }
+
     saveState();
     renderQuestion();
 }
 
 function resetProgress() {
+    // Si estamos en Modo Repaso, reiniciar ÚNICAMENTE las preguntas en repaso
+    if (state.reviewMode) {
+        resetReviewProgress();
+        return;
+    }
+
     if (confirm(`¿Seguro que quieres reiniciar las respuestas del banco "${BANKS[state.currentBank].name}"? Las preguntas marcadas con 📌 NO se desmarcarán.`)) {
         // Borrar solo las claves de este banco
         const prefix = `${state.currentBank}_`;
         Object.keys(state.answers).forEach(k => { if (k.startsWith(prefix)) delete state.answers[k]; });
-        // Se elimina la limpieza de bookmarks para que persistan a menos que el usuario las desmarque manualmente
         
         state.currentIndex = 0;
         state.reviewMode = false;
+        state.reviewQueue = null;
         state.shuffleState = null;
         
         // Reload questions to original order
@@ -481,20 +514,36 @@ function updateProgress() {
         }
     });
 
-    const progressPercent = total > 0 ? (answeredCount / total) * 100 : 0;
-    elements.progressBar.style.width = `${progressPercent}%`;
-
     const validIndices = getFilteredIndices();
     const displayTotal = state.reviewMode ? validIndices.length : total;
     let currentPos = validIndices.indexOf(state.currentIndex) + 1;
     if (currentPos === 0 && state.reviewMode) {
-        // Si la pregunta actual ya no está en validIndices, aproximamos su posición
         currentPos = validIndices.filter(idx => idx < state.currentIndex).length + 1;
     }
     const displayPos = currentPos;
 
-    elements.questionCounter.textContent = `Pregunta ${displayPos} de ${displayTotal}`;
-    elements.scoreCounter.textContent = `✓ ${correctCount} / ${total}`;
+    if (state.reviewMode) {
+        let reviewCorrect = 0;
+        let reviewAnswered = 0;
+        validIndices.forEach(idx => {
+            const key = makeKey(idx);
+            if (state.answers[key] !== undefined) {
+                reviewAnswered++;
+                if (state.answers[key] === activeQuestions[idx].correctIndex) {
+                    reviewCorrect++;
+                }
+            }
+        });
+        const reviewPercent = validIndices.length > 0 ? (reviewAnswered / validIndices.length) * 100 : 0;
+        elements.progressBar.style.width = `${reviewPercent}%`;
+        elements.questionCounter.textContent = `Pregunta ${displayPos} de ${displayTotal} (Repaso)`;
+        elements.scoreCounter.textContent = `✓ ${reviewCorrect} / ${validIndices.length}`;
+    } else {
+        const progressPercent = total > 0 ? (answeredCount / total) * 100 : 0;
+        elements.progressBar.style.width = `${progressPercent}%`;
+        elements.questionCounter.textContent = `Pregunta ${displayPos} de ${displayTotal}`;
+        elements.scoreCounter.textContent = `✓ ${correctCount} / ${total}`;
+    }
 }
 
 // ================================================================
@@ -510,6 +559,7 @@ function setupEventListeners() {
     if (elements.btnExitFilter) {
         elements.btnExitFilter.addEventListener('click', () => {
             state.reviewMode = false;
+            state.reviewQueue = null;
             saveState();
             renderQuestion();
         });
